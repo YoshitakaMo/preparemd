@@ -19,12 +19,35 @@ BILABのチュートリアルに沿って、入力とするpdbファイルから
 - ボックスサイズに応じてイオン濃度を引数`--ion_conc`から調節可能。
 - MDトラジェクトリを解析するための`trajfix.in`を自動生成。
 
-## How To Use
+## Installation
 
-仕様上、引数が多く設定されていますので1つ1つ確認していってください。
+Pythonライブラリの依存を解決しておく。
 
 ```bash
-python3.9 run_preparemd.py \
+python3.9 -m pip install absl-py biopython
+```
+
+GitHubからこのコードを適当なディレクトリにダウンロードする。
+
+```bash
+mkdir -p ~/apps
+cd ~/apps
+git clone https://github.com/YoshitakaMo/preparemd.git
+```
+
+このパッケージが更新されたら`git pull origin main`コマンドで時々更新差分をダウンロードする。
+
+```bash
+cd ~/apps/preparemd
+git pull origin main
+```
+
+## How To Use
+
+仕様上、指定可能な引数が多く設定されていますので1つ1つ確認していってください。
+
+```bash
+python3.9 ~/apps/preparemd/run_preparemd.py \
     --file=/path/to/your/foo.pdb \
     --distdir=/path/to/your/targetdirectory \
     --num_mddir=3 \
