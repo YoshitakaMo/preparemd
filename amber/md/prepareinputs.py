@@ -54,10 +54,10 @@ def write_heatinput(dir, residuenum: int, ppn: int = 16, heatdir: str = "heat") 
     ntx=5,                          ! Coordinates and velocities will be read from a previous run."""
             simtime = 50000
             annealing = """ /
- &wt
-  type='DUMPFREQ', istep1=5000,
- /
- &wt type='END' /
+&wt
+    type='DUMPFREQ', istep1=5000,
+/
+&wt type='END' /
 DISANG=dist1.rst
 DUMPAVE=dist1.dat
 """

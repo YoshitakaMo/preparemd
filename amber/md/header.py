@@ -14,7 +14,7 @@ if test -f /home/apps/Modules/init/profile.sh; then
     module load amber22
 elif test -f /usr/local/Modules/init/profile.sh; then
     . /usr/local/Modules/init/profile.sh
-    module load amber20
+    module load amber20_GPU
 fi
 ### Write your qsub script from here.
 echo `hostname`
