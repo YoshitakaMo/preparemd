@@ -32,6 +32,7 @@ def heatinput(restart_input: str,
     restraintmask=':1-{residuenum} & !@H=',  ! String that specifies the restrained atoms when ntr=1.
     restraint_wt={weights[number-1]},              ! The weight (in kcal mol-1 Å-2) for the positional restraints.
     ioutfm=1,                       ! Binary NetCDF trajectory
+    nmropt=0,                       ! turn off (0) or on (1) NMR restraints
 {annealing}/
  """
     return heat_template

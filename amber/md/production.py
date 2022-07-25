@@ -28,6 +28,12 @@ def productioninput(restart_input: str, box: int, ns_per_box: int) -> str:
     iwrap=1,              ! the coordinates written to the restart and trajectory files will be "wrapped" into a primary box.
     nmropt=0,             ! turn on NMR restraints
 /
+&wt
+    type='DUMPFREQ', istep1=5000,
+/
+&wt type='END' /
+DISANG=dist1.rst
+DUMPAVE=dist1.dat
 """
 
     return prod_template

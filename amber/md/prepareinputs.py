@@ -53,7 +53,14 @@ def write_heatinput(dir, residuenum: int, ppn: int = 16, heatdir: str = "heat") 
             restart_input = """irest=1,                        ! Restart MD simulation from a previous run.
     ntx=5,                          ! Coordinates and velocities will be read from a previous run."""
             simtime = 50000
-            annealing = ""
+            annealing = """ /
+ &wt
+  type='DUMPFREQ', istep1=5000,
+ /
+ &wt type='END' /
+DISANG=dist1.rst
+DUMPAVE=dist1.dat
+"""
 
         md_i = heat.heatinput(restart_input, simtime, annealing, residuenum, weights, i)
         mdfile = os.path.join(dir, heatdir, f"md{i}.in")
