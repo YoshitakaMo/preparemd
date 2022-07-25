@@ -73,7 +73,6 @@ def write_productioninput(dir, ppn: int = 16, box: int = 3, ns_per_mddir: int = 
         os.makedirs(os.path.join(dir, productiondir))
     mdfile = os.path.join(dir, productiondir, "md.in")
 
-    prevrstfile = "../heat/md9.rst7" # heat直後のrstファイル。
     # prディレクトリの中にboxで指定した数だけ001〜xxxというディレクトリを作成する
     # 各ディレクトリではns_per_mddirで指定した時間(ns)だけMDシミュレーションを実行するための
     # インプットファイルを作成する。
@@ -97,7 +96,7 @@ def write_productioninput(dir, ppn: int = 16, box: int = 3, ns_per_mddir: int = 
             f.write(mdinput)
 
         runfile = os.path.join(dir, productiondir, box_zero, "run.sh")
-
+        prevrstfile = "../../heat/md9.rst7" # heat直後のrstファイル。
         runinput = production.runinput(prevrstfile, ppn=ppn)
         with open(runfile, mode="w") as f:
             f.write(runinput)

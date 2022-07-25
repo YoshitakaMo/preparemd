@@ -39,7 +39,7 @@ def runinput(prevrstfile: str, ppn: int = 16) -> str:
     qsub_template = header.qsubheader(ppn=ppn)
     run_template = qsub_template + f"""
 # トポロジーファイルの指定
-topfile="../../top/leap.parm7"
+topfile="../../../top/leap.parm7"
 # 再開させたいrst7ファイルを指定
 rstfile="{prevrstfile}"
 
