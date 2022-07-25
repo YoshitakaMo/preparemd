@@ -34,6 +34,6 @@ trajout comp.trr
 go
 """
     with open(trajfixfile, mode="w") as f:
-        f.write(trajfixfile)
+        f.write(trajfix_content)
 
 
