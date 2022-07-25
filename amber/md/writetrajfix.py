@@ -3,7 +3,7 @@ import os
 def writetrajfix(distdir: str, resnumber: int, num_mddir: int) -> None:
     """Write trajfix.in file in amber/pr directory."""
 
-    trajfixfile = os.path.join(distdir, "pr", "trajfix.in")
+    trajfixfile = os.path.join(distdir, "amber", "pr", "trajfix.in")
     STEP = 50
     trajinpart = ""
     for i in range(1, num_mddir+1):
@@ -33,7 +33,7 @@ strip :SOD,WAT,TIP3,Cl-,Na+
 trajout comp.trr
 go
 """
-    with open(trajfixfile) as f:
+    with open(trajfixfile, mode="w") as f:
         f.write(trajfixfile)
 
 
