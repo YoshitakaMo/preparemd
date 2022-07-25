@@ -129,9 +129,9 @@ def preparepre2file(distdir: str, rotate: str = "", sslink_file: str = "") -> No
                                      encoding='utf-8')
     fp.write(f"""parm {pdbfile_path}
 trajin {pdbfile_path}
+box auto
 autoimage origin
 {rotate}
-box auto
 trajout {outfile_path}
 go
 """)
