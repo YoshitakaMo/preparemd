@@ -11,7 +11,7 @@ BILABのチュートリアルに沿って、入力とするpdbファイルから
 
 このパッケージの特長
 - BILABチュートリアルに沿ってトポロジーファイルを含むディレクトリ`top`とMDの実行ファイルを含むディレクトリ`amber/{minimize,heat,pr}`を自動的に生成する。
-- MDシミュレーションをminimize~heat~prと一気に実行可能な`totalrun.sh`をproduction runのディレクトリ`amber/pr`内に自動生成する。
+- MDシミュレーションをminimize, heat, prと一気に実行可能な`totalrun.sh`をproduction runのディレクトリ`amber/pr`内に自動生成する。
 - production runのディレクトリ`amber/pr`内に生成するサブディレクトリの数を引数`--num_mddir`と`--ns_per_box`調節可能。
 - **SS結合のペアを入力pdbファイルの構造情報から推定して自動的に適切に設定する**。
 - 上に加え、SS結合ペア情報を外部ファイル`sslink`から上書き可能。AlphaFoldで出てきた構造では想定と異なるSS結合になっている場合が時々あるため、このケースに対応した機能である。
@@ -21,7 +21,10 @@ BILABのチュートリアルに沿って、入力とするpdbファイルから
 
 ## Installation
 
-Pythonライブラリの依存を解決しておく。
+以下のソフトウェアが必要。
+
+- お使いのPC/macにAMBER22に含まれるAmberTools22がインストールされている。
+- Python3（> 3.6）以上で、Pythonライブラリの依存を解決しておく。
 
 ```bash
 python3.9 -m pip install absl-py biopython
