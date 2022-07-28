@@ -34,6 +34,7 @@ def heatinput(restart_input: str,
     ioutfm=1,                       ! Binary NetCDF trajectory
     nmropt=0,                       ! turn off (0) or on (1) NMR restraints
 {annealing}/
+
  """
     return heat_template
 

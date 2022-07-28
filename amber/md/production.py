@@ -34,6 +34,7 @@ def productioninput(restart_input: str, box: int, ns_per_box: int) -> str:
 &wt type='END' /
 DISANG=dist1.rst
 DUMPAVE=dist1.dat
+
 """
 
     return prod_template
@@ -56,6 +57,7 @@ pmemd.cuda_SPFP.MPI -O \\
     -c ${{rstfile}} \\
     -r md.rst7 \\
     -ref ${{topfile}}
+
 """
 
     return run_template
