@@ -103,7 +103,8 @@ def write_productioninput(dir, ppn: int = 16, box: int = 3, ns_per_mddir: int = 
             f.write(mdinput)
 
         runfile = os.path.join(dir, productiondir, box_zero, "run.sh")
-        prevrstfile = "../../heat/md9.rst7" # heat直後のrstファイル。
+        if i == 1:
+            prevrstfile = "../../heat/md9.rst7" # heat直後のrstファイル。
         runinput = production.runinput(prevrstfile, ppn=ppn)
         with open(runfile, mode="w") as f:
             f.write(runinput)
