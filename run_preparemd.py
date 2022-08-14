@@ -84,15 +84,15 @@ def prepareamberfiles(distdir: str,
                       residuenum: int,
                       box: int,
                       ns_per_mddir: int,
-                      ppn: int = 16):
+                      ppn: int = 16) -> None:
     """prepare AMBER input files for minimize, heat, and pr directories
 
     Args:
         distdir: 出力先のディレクトリ名。この中にamber, topディレクトリが作られることを想定する。
-
-    Returns:
-        inputpdb: pdb4amberを通して出てきた整形済みのpdbファイル。HIS->HID, HIEになっている
-        sslink:   pdb4amberを通して出てきたSS結合情報を格納したテキストファイル
+        residuenum: 系に存在する残基数。position restraintsをかける対象の原子の残基範囲と一致する。
+        box: prディレクトリ内部に作成するサブディレクトリ数(001, 002, ...)。
+        ns_per_mddir: 上記のサブディレクトリにつき、何nsのシミュレーションを行うか。
+        ppn: CPUの数
     """
     outputdir = os.path.join(distdir, "amber")
     if not os.path.exists(outputdir):
@@ -130,7 +130,7 @@ def preparepre2file(distdir: str, rotate: str = "", sslink_file: str = "") -> No
     fp.write(f"""parm {pdbfile_path}
 trajin {pdbfile_path}
 box auto
-autoimage origin
+autoimage @CA origin
 {rotate}
 trajout {outfile_path}
 go
