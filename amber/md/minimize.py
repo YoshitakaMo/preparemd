@@ -56,7 +56,7 @@ def min2input() -> str:
 
 def minimizercontent() -> str:
     """process of minimize/run.sh"""
-    content = """DO_PARALLEL="mpirun -np ${PBS_NP}"
+    content = """DO_PARALLEL="mpirun -np ${PBS_NP} --mca orte_base_help_aggregate 0"
 topfile="../../top/leap.parm7"
 rstfile="../../top/leap.rst7"
 
