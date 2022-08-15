@@ -1,7 +1,14 @@
 import os
 
-def writetrajfix(distdir: str, resnumber: int, num_mddir: int) -> None:
-    """Write trajfix.in file in amber/pr directory."""
+def writetrajfix(distdir: str, resnumber: int, num_mddir: int, suffix: str = "") -> None:
+    """Write trajfix.in file in amber/pr directory.
+
+    Args:
+        distdir: 出力先のディレクトリ名。この中にamber, topディレクトリが作られることを想定する。
+        resnumber: 系に存在する残基数。position restraintsをかける対象の原子の残基範囲と一致する。
+        num_mddir: 上記のサブディレクトリにつき、何nsのシミュレーションを行うか。
+        suffix: 出力トラジェクトリにつけるサフィックス。デフォルトは""。
+    """
 
     trajfixfile = os.path.join(distdir, "amber", "pr", "trajfix.in")
     STEP = 50
@@ -18,7 +25,7 @@ unwrap :1-{resnumber}
 center :1-{resnumber}@CA mass origin
 rms first out rmsd.dat @CA
 strip :SOD,WAT,TIP3,Cl-,Na+
-trajout init.pdb pdb nobox
+trajout {suffix}init.pdb pdb nobox
 go
 
 clear trajin
@@ -30,7 +37,7 @@ center :1-{resnumber}@CA mass origin
 rms first out rmsd.dat @CA
 strip :SOD,WAT,TIP3,Cl-,Na+
 
-trajout comp.trr
+trajout {suffix}comp.trr
 go
 """
     with open(trajfixfile, mode="w") as f:

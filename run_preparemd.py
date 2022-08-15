@@ -291,6 +291,8 @@ flags.DEFINE_string('boxsize', "",
                     'with 10 Å margins in the x, y, and z directions.')
 flags.DEFINE_string('rotate', "", 'rotate the solute. '
                     'For example, "x 90" will rotate the solute 90 degrees around the x-axis.')
+flags.DEFINE_string('trajsuffix', "", 'Suffix of trajectory. '
+                    'This is used in the "trajfix.in" file. e.g. "S36S36". ')
 flags.DEFINE_string('sslink', "", 'input ssilnk file. e.g. "pre_sslink"'
                     'This file format is the same as an output sslink file of pdb4amber. '
                     'Set this value if you have a correct pair SS-bond list.')
@@ -327,7 +329,7 @@ def main(argv):
     if FLAGS.run_leap:
         run_leap(FLAGS.distdir, FLAGS.boxsize, pre2boxsize)
     prepareamberfiles(FLAGS.distdir, resnumber, FLAGS.num_mddir, FLAGS.ns_per_mddir)
-    writetrajfix.writetrajfix(FLAGS.distdir, resnumber, FLAGS.num_mddir)
+    writetrajfix.writetrajfix(FLAGS.distdir, resnumber, FLAGS.num_mddir, FLAGS.trajsuffix)
 
 if __name__ == '__main__':
     flags.mark_flags_as_required([
