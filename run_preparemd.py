@@ -1,4 +1,4 @@
-#%%
+# %%
 import os
 import shutil
 import subprocess
@@ -7,7 +7,6 @@ import Bio.PDB
 from absl import logging
 from absl import app
 from absl import flags
-from absl import logging
 from amber.md import prepareinputs
 from amber.md import writetrajfix
 from amber.top import makeleapin
@@ -231,9 +230,6 @@ def run_leap(distdir: str, boxsize: str, pre2boxsize: str) -> None:
     ):
         print(f"Warning: Result box size is {result_boxsize}.")
 
-    # Perturbed Chargeの情報確認
-    result_charge = get_charge(outlogfile)
-    charge = float(result_charge[0])
     # 作業ディレクトリの変更終了
     os.chdir(cwd)
 
@@ -268,7 +264,7 @@ def cys_to_cyx_in_pre2file(distdir: str, sslink_file: str) -> None:
         f.writelines(outcontent)
 
 
-#%%
+# %%
 flags.DEFINE_string("file", None, "Path to input pdb file.")
 flags.DEFINE_string(
     "distdir", None, "Path to a directory that will " "store top and amber files."
@@ -338,11 +334,11 @@ def main(argv):
     if len(argv) > 1:
         raise app.UsageError("Too many command-line arguments.")
     if FLAGS.num_mddir < 1:
-        raise ValueError(f"The num_mddir argument must be 1 or more.")
+        raise ValueError("The num_mddir argument must be 1 or more.")
     if FLAGS.ns_per_mddir < 1:
-        raise ValueError(f"The ns_per_mddir argument must be 1 or more.")
+        raise ValueError("The ns_per_mddir argument must be 1 or more.")
     if FLAGS.ion_conc < 1:
-        raise ValueError(f"The ion_conc argument must be 1 or more.")
+        raise ValueError("The ion_conc argument must be 1 or more.")
 
     resnumber, sslink_file = run_pdb4amber(
         FLAGS.file, FLAGS.distdir, strip=FLAGS.strip, sslink_file=FLAGS.sslink
@@ -404,4 +400,4 @@ if __name__ == "__main__":
 #                       sslink_file=sslink_file)
 # run_leap(distdir, boxsize, pre2boxsize)
 # prepareamberfiles(distdir, resnumber, num_mddir, ns_per_mddir, ppn)
-#%%
+# %%

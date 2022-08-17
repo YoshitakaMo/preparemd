@@ -1,5 +1,6 @@
 from amber.md import header
 
+
 def productioninput(restart_input: str, box: int, ns_per_box: int) -> str:
     # simulation timeはns_per_box(ns)になるように指定
     simulationtime = ns_per_box * 500000
@@ -44,7 +45,9 @@ def runinput(prevrstfile: str, ppn: int = 16) -> str:
     """Template file for pr/00x/run.sh"""
 
     qsub_template = header.qsubheader(ppn=ppn)
-    run_template = qsub_template + f"""
+    run_template = (
+        qsub_template
+        + f"""
 # トポロジーファイルの指定
 topfile="../../../top/leap.parm7"
 # 再開させたいrst7ファイルを指定
@@ -59,5 +62,6 @@ pmemd.cuda_SPFP.MPI -O \\
     -ref ${{topfile}}
 
 """
+    )
 
     return run_template
