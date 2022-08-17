@@ -140,7 +140,7 @@ for i in `seq 1 {box}`; do
     pmemd.cuda_SPFP.MPI -O \\
         -i md.in \\
         -o md.out \\
-        -p ../${{topfile}} \\
+        -p ${{topfile}} \\
         -c ${{rstfile}} \\
         -r md.rst7 \\
         -ref ${{topfile}} || exit $?
