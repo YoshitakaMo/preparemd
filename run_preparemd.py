@@ -14,7 +14,10 @@ from amber.top import makeleapin
 
 logging.set_verbosity(logging.INFO)
 
-def run_pdb4amber(pdbfile_path: str , distdir: str, strip: str = "", sslink_file: str = ""):
+
+def run_pdb4amber(
+    pdbfile_path: str, distdir: str, strip: str = "", sslink_file: str = ""
+):
     """run pdb4amber command to obtain cleaned pdb and sslink files
 
     Args:
@@ -34,7 +37,9 @@ def run_pdb4amber(pdbfile_path: str , distdir: str, strip: str = "", sslink_file
     """
     pdb4amber_path = shutil.which("pdb4amber")
     if pdb4amber_path is None:
-        raise RuntimeError("pdb4amber command was not found. Make sure AmberTools was correctly installed.")
+        raise RuntimeError(
+            "pdb4amber command was not found. Make sure AmberTools was correctly installed."
+        )
 
     if not os.path.exists(os.path.join(distdir, "top")):
         os.makedirs(os.path.join(distdir, "top"))
@@ -44,31 +49,26 @@ def run_pdb4amber(pdbfile_path: str , distdir: str, strip: str = "", sslink_file
     if strip != "":
         strip += " | @H, H2, H3, HG"
     else:
-        strip = '@H, H2, H3, HG'
-    cmd = [
-        pdb4amber_path,
-        '-i', pdbfile_path,
-        '-o', outputfile,
-        '-s', strip]
+        strip = "@H, H2, H3, HG"
+    cmd = [pdb4amber_path, "-i", pdbfile_path, "-o", outputfile, "-s", strip]
 
-    logging.info('Launching subprocess "%s"', ' '.join(cmd))
-    process = subprocess.Popen(
-    cmd, stdout = subprocess.PIPE, stderr=subprocess.PIPE)
+    logging.info('Launching subprocess "%s"', " ".join(cmd))
+    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = process.communicate()
     retcode = process.wait()
 
     if retcode:
         print(stderr)
-        raise RuntimeError('pdb4amber process failed.')
+        raise RuntimeError("pdb4amber process failed.")
 
     if sslink_file == "":
         sslink_file = os.path.join(distdir, "top", "pre_sslink")
 
     if not os.path.isfile(sslink_file):
-        raise FileNotFoundError(f'{sslink_file} file is not found.')
+        raise FileNotFoundError(f"{sslink_file} file is not found.")
 
     # outputfile内に存在する残基数の情報がposition restraintsの生成に必要。
-    pdb_parser = Bio.PDB.PDBParser(QUIET = True)
+    pdb_parser = Bio.PDB.PDBParser(QUIET=True)
     struc = pdb_parser.get_structure("pre", outputfile)
     resnum = 0
     for model in struc:
@@ -80,11 +80,9 @@ def run_pdb4amber(pdbfile_path: str , distdir: str, strip: str = "", sslink_file
     return resnum, sslink_file
 
 
-def prepareamberfiles(distdir: str,
-                      residuenum: int,
-                      box: int,
-                      ns_per_mddir: int,
-                      ppn: int = 16) -> None:
+def prepareamberfiles(
+    distdir: str, residuenum: int, box: int, ns_per_mddir: int, ppn: int = 16
+) -> None:
     """prepare AMBER input files for minimize, heat, and pr directories
 
     Args:
@@ -120,36 +118,34 @@ def preparepre2file(distdir: str, rotate: str = "", sslink_file: str = "") -> No
 
     cpptraj_path = shutil.which("cpptraj")
     if cpptraj_path is None:
-        raise RuntimeError("cpptraj command was not found. Make sure AmberTools was correctly installed.")
+        raise RuntimeError(
+            "cpptraj command was not found. Make sure AmberTools was correctly installed."
+        )
 
     pdbfile_path = os.path.join(distdir, "top", "pre.pdb")
     outfile_path = os.path.join(distdir, "top", "pre2.pdb")
-    fp = tempfile.NamedTemporaryFile(suffix='.in',
-                                     mode='w+t',
-                                     encoding='utf-8')
-    fp.write(f"""parm {pdbfile_path}
+    fp = tempfile.NamedTemporaryFile(suffix=".in", mode="w+t", encoding="utf-8")
+    fp.write(
+        f"""parm {pdbfile_path}
 trajin {pdbfile_path}
 box auto
 autoimage @CA origin
 {rotate}
 trajout {outfile_path}
 go
-""")
+"""
+    )
     fp.seek(0)
-    cmd = [
-        cpptraj_path,
-        '-i', fp.name,
-        '-o', "/dev/null"]
+    cmd = [cpptraj_path, "-i", fp.name, "-o", "/dev/null"]
 
-    logging.info('Launching subprocess "%s"', ' '.join(cmd))
-    process = subprocess.Popen(
-    cmd, stdout = subprocess.PIPE, stderr=subprocess.PIPE)
+    logging.info('Launching subprocess "%s"', " ".join(cmd))
+    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = process.communicate()
     retcode = process.wait()
 
     if retcode:
         print(stderr)
-        raise RuntimeError('cpptraj process failed.')
+        raise RuntimeError("cpptraj process failed.")
 
     fp.close()
 
@@ -160,10 +156,11 @@ go
         x = f.read()
 
     with open(outfile_path, "wt") as f:
-        x = x.replace("CYX","CYS")
+        x = x.replace("CYX", "CYS")
         f.write(x)
 
     return boxsize
+
 
 def get_resultboxsize(logfile: str) -> dict:
     """Get Box size info from leap.log"""
@@ -194,23 +191,23 @@ def run_leap(distdir: str, boxsize: str, pre2boxsize: str) -> None:
     """make leap.in file to run tleap command."""
     tleap_path = shutil.which("tleap")
     if tleap_path is None:
-        raise RuntimeError("tleap command was not found. Make sure AmberTools was correctly installed.")
+        raise RuntimeError(
+            "tleap command was not found. Make sure AmberTools was correctly installed."
+        )
 
     # 作業ディレクトリを一時的に変更
     cwd = os.getcwd()
-    os.chdir(os.path.join(cwd, distdir,"top"))
+    os.chdir(os.path.join(cwd, distdir, "top"))
     leapinfile = "leap.in"
     if not os.path.isfile(leapinfile):
         raise FileNotFoundError(f"{leapinfile} was not found.")
     outlogfile = "leap.log"
     if os.path.isfile(outlogfile):
         os.remove(outlogfile)
-    cmd = [tleap_path,
-           '-f', leapinfile]
+    cmd = [tleap_path, "-f", leapinfile]
 
-    logging.info('Launching subprocess "%s"', ' '.join(cmd))
-    process = subprocess.Popen(
-    cmd, stdout = subprocess.PIPE, stderr=subprocess.PIPE)
+    logging.info('Launching subprocess "%s"', " ".join(cmd))
+    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = process.communicate()
     retcode = process.wait()
 
@@ -218,7 +215,7 @@ def run_leap(distdir: str, boxsize: str, pre2boxsize: str) -> None:
         print(stdout.decode())
         print(stderr.decode())
         os.chdir(cwd)
-        raise RuntimeError('tleap process failed.')
+        raise RuntimeError("tleap process failed.")
 
     # leap終了時のボックスサイズを取得
     result_boxsize = get_resultboxsize(outlogfile)
@@ -227,9 +224,11 @@ def run_leap(distdir: str, boxsize: str, pre2boxsize: str) -> None:
     else:
         inputsize = boxsize.split()
 
-    if not (float(result_boxsize[0]) - float(inputsize[0]) < 5.0 and
-            float(result_boxsize[1]) - float(inputsize[1]) < 5.0 and
-            float(result_boxsize[2]) - float(inputsize[2]) < 5.0):
+    if not (
+        float(result_boxsize[0]) - float(inputsize[0]) < 5.0
+        and float(result_boxsize[1]) - float(inputsize[1]) < 5.0
+        and float(result_boxsize[2]) - float(inputsize[2]) < 5.0
+    ):
         print(f"Warning: Result box size is {result_boxsize}.")
 
     # Perturbed Chargeの情報確認
@@ -268,43 +267,76 @@ def cys_to_cyx_in_pre2file(distdir: str, sslink_file: str) -> None:
             outcontent.append(line)
         f.writelines(outcontent)
 
+
 #%%
-flags.DEFINE_string('file', None, 'Path to input pdb file.')
-flags.DEFINE_string('distdir', None, 'Path to a directory that will '
-                    'store top and amber files.')
-flags.DEFINE_string('strip', "",
-                    'If provided, the specified region will be removed from '
-                    'MD simulations. This is useful for signal peptides, for example.')
-flags.DEFINE_integer('num_mddir', 3,
-                     'Number of directories that will be made in the amber/pr directory. '
-                     'Default is 3.')
-flags.DEFINE_integer('ns_per_mddir', 50,
-                     'Nanoseconds of MD simulations in each production run direcotry (amber/pr/001, 002, ...). '
-                     'Default is 50 (ns).')
-flags.DEFINE_integer('ion_conc', 150,
-                     'Ion concentration in the periodic boudnary box of MD simulations. '
-                     'Default is 150 (mM).')
-flags.DEFINE_string('boxsize', "",
-                    'The periodic boundary box for MD simulations will be this value, if provided. '
-                    'For example, "120 120 120" will be a cube box with 120 Å on a side.'
-                    'If no value is specified, the box size is automatically assigned '
-                    'with 10 Å margins in the x, y, and z directions.')
-flags.DEFINE_string('rotate', "", 'rotate the solute. '
-                    'For example, "x 90" will rotate the solute 90 degrees around the x-axis.')
-flags.DEFINE_string('trajsuffix', "", 'Suffix of trajectory. '
-                    'This is used in the "trajfix.in" file. e.g. "S36S36". ')
-flags.DEFINE_string('sslink', "", 'input ssilnk file. e.g. "pre_sslink"'
-                    'This file format is the same as an output sslink file of pdb4amber. '
-                    'Set this value if you have a correct pair SS-bond list.')
-flags.DEFINE_integer('ppn', 16, "number of cpus to calculate.")
-flags.DEFINE_boolean('run_leap', True, 'Whether to run the leap process. '
-                     'Turning leap process off may be useful to prepare only amber MD files.')
+flags.DEFINE_string("file", None, "Path to input pdb file.")
+flags.DEFINE_string(
+    "distdir", None, "Path to a directory that will " "store top and amber files."
+)
+flags.DEFINE_string(
+    "strip",
+    "",
+    "If provided, the specified region will be removed from "
+    "MD simulations. This is useful for signal peptides, for example.",
+)
+flags.DEFINE_integer(
+    "num_mddir",
+    3,
+    "Number of directories that will be made in the amber/pr directory. "
+    "Default is 3.",
+)
+flags.DEFINE_integer(
+    "ns_per_mddir",
+    50,
+    "Nanoseconds of MD simulations in each production run direcotry (amber/pr/001, 002, ...). "
+    "Default is 50 (ns).",
+)
+flags.DEFINE_integer(
+    "ion_conc",
+    150,
+    "Ion concentration in the periodic boudnary box of MD simulations. "
+    "Default is 150 (mM).",
+)
+flags.DEFINE_string(
+    "boxsize",
+    "",
+    "The periodic boundary box for MD simulations will be this value, if provided. "
+    'For example, "120 120 120" will be a cube box with 120 Å on a side.'
+    "If no value is specified, the box size is automatically assigned "
+    "with 10 Å margins in the x, y, and z directions.",
+)
+flags.DEFINE_string(
+    "rotate",
+    "",
+    "rotate the solute. "
+    'For example, "x 90" will rotate the solute 90 degrees around the x-axis.',
+)
+flags.DEFINE_string(
+    "trajprefix",
+    "",
+    "prefix of trajectory. " 'This is used in the "trajfix.in" file. e.g. "S36S36". ',
+)
+flags.DEFINE_string(
+    "sslink",
+    "",
+    'input ssilnk file. e.g. "pre_sslink"'
+    "This file format is the same as an output sslink file of pdb4amber. "
+    "Set this value if you have a correct pair SS-bond list.",
+)
+flags.DEFINE_integer("ppn", 16, "number of cpus to calculate.")
+flags.DEFINE_boolean(
+    "run_leap",
+    True,
+    "Whether to run the leap process. "
+    "Turning leap process off may be useful to prepare only amber MD files.",
+)
 
 FLAGS = flags.FLAGS
 
+
 def main(argv):
     if len(argv) > 1:
-        raise app.UsageError('Too many command-line arguments.')
+        raise app.UsageError("Too many command-line arguments.")
     if FLAGS.num_mddir < 1:
         raise ValueError(f"The num_mddir argument must be 1 or more.")
     if FLAGS.ns_per_mddir < 1:
@@ -312,30 +344,35 @@ def main(argv):
     if FLAGS.ion_conc < 1:
         raise ValueError(f"The ion_conc argument must be 1 or more.")
 
-    resnumber, sslink_file = run_pdb4amber(FLAGS.file,
-                                      FLAGS.distdir,
-                                      strip=FLAGS.strip,
-                                      sslink_file=FLAGS.sslink)
-    pre2boxsize = preparepre2file(FLAGS.distdir,
-                                  rotate=FLAGS.rotate,
-                                  sslink_file=sslink_file)
-    cys_to_cyx_in_pre2file(FLAGS.distdir,
-                           sslink_file=sslink_file)
-    makeleapin.makeleapin(FLAGS.distdir,
-                          boxsize=FLAGS.boxsize,
-                          pre2boxsize=pre2boxsize,
-                          ion_conc=FLAGS.ion_conc,
-                          sslink_file=sslink_file)
+    resnumber, sslink_file = run_pdb4amber(
+        FLAGS.file, FLAGS.distdir, strip=FLAGS.strip, sslink_file=FLAGS.sslink
+    )
+    pre2boxsize = preparepre2file(
+        FLAGS.distdir, rotate=FLAGS.rotate, sslink_file=sslink_file
+    )
+    cys_to_cyx_in_pre2file(FLAGS.distdir, sslink_file=sslink_file)
+    makeleapin.makeleapin(
+        FLAGS.distdir,
+        boxsize=FLAGS.boxsize,
+        pre2boxsize=pre2boxsize,
+        ion_conc=FLAGS.ion_conc,
+        sslink_file=sslink_file,
+    )
     if FLAGS.run_leap:
         run_leap(FLAGS.distdir, FLAGS.boxsize, pre2boxsize)
     prepareamberfiles(FLAGS.distdir, resnumber, FLAGS.num_mddir, FLAGS.ns_per_mddir)
-    writetrajfix.writetrajfix(FLAGS.distdir, resnumber, FLAGS.num_mddir, FLAGS.trajsuffix)
+    writetrajfix.writetrajfix(
+        FLAGS.distdir, resnumber, FLAGS.num_mddir, FLAGS.trajprefix
+    )
 
-if __name__ == '__main__':
-    flags.mark_flags_as_required([
-        'file',
-        'distdir',
-    ])
+
+if __name__ == "__main__":
+    flags.mark_flags_as_required(
+        [
+            "file",
+            "distdir",
+        ]
+    )
 
     app.run(main)
 
@@ -368,4 +405,3 @@ if __name__ == '__main__':
 # run_leap(distdir, boxsize, pre2boxsize)
 # prepareamberfiles(distdir, resnumber, num_mddir, ns_per_mddir, ppn)
 #%%
-

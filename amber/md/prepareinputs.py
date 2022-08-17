@@ -4,6 +4,7 @@ from amber.md import heat
 from amber.md import production
 from amber.md import header
 
+
 def write_minimizeinput(dir: str, ppn: int = 16, minimizedir: str = "minimize") -> None:
     """make AMBER inputfiles for minimization"""
     if not os.path.exists(os.path.join(dir, minimizedir)):
@@ -25,6 +26,7 @@ def write_minimizeinput(dir: str, ppn: int = 16, minimizedir: str = "minimize") 
 
     os.chmod(runfile, 0o755)
 
+
 def write_heatinput(dir, residuenum: int, ppn: int = 16, heatdir: str = "heat") -> None:
     """make AMBER inputfiles for equilibration
     Args:
@@ -37,7 +39,7 @@ def write_heatinput(dir, residuenum: int, ppn: int = 16, heatdir: str = "heat") 
         os.makedirs(os.path.join(dir, heatdir))
     # 徐々にrestraint_wtの値を小さくしていく
     weights = [10.0, 10.0, 5.0, 2.0, 1.0, 0.5, 0.2, 0.1, 0.0]
-    for i in range(1,10):
+    for i in range(1, 10):
         # md1.inにはirest=0, ntx=1、md2-md9.inにはirest=1, ntx=5を指定する。
         is_md1 = True if i == 1 else False
         if is_md1:
@@ -74,7 +76,9 @@ DUMPAVE=dist1.dat
         os.chmod(runfile, 0o755)
 
 
-def write_productioninput(dir, ppn: int = 16, box: int = 3, ns_per_mddir: int = 50, productiondir="pr") -> None:
+def write_productioninput(
+    dir, ppn: int = 16, box: int = 3, ns_per_mddir: int = 50, productiondir="pr"
+) -> None:
     """make AMBER input files for production run"""
     if not os.path.exists(os.path.join(dir, productiondir)):
         os.makedirs(os.path.join(dir, productiondir))
@@ -83,7 +87,7 @@ def write_productioninput(dir, ppn: int = 16, box: int = 3, ns_per_mddir: int = 
     # prディレクトリの中にboxで指定した数だけ001〜xxxというディレクトリを作成する
     # 各ディレクトリではns_per_mddirで指定した時間(ns)だけMDシミュレーションを実行するための
     # インプットファイルを作成する。
-    for i in range(1, box+1):
+    for i in range(1, box + 1):
         # box_zeroはboxを桁数指定で0埋めしたもの
         box_zero = str(i).zfill(3)
         if not os.path.exists(os.path.join(dir, productiondir, box_zero)):
@@ -104,7 +108,7 @@ def write_productioninput(dir, ppn: int = 16, box: int = 3, ns_per_mddir: int = 
 
         runfile = os.path.join(dir, productiondir, box_zero, "run.sh")
         if i == 1:
-            prevrstfile = "../../heat/md9.rst7" # heat直後のrstファイル。
+            prevrstfile = "../../heat/md9.rst7"  # heat直後のrstファイル。
         runinput = production.runinput(prevrstfile, ppn=ppn)
         with open(runfile, mode="w") as f:
             f.write(runinput)
@@ -113,8 +117,8 @@ def write_productioninput(dir, ppn: int = 16, box: int = 3, ns_per_mddir: int = 
         prevrstfile = os.path.join("..", box_zero, "md.rst7")
 
 
-def write_totalrunfile(dir: str,  box: int, ppn: int) -> None:
-    """make a run.sh file to run """
+def write_totalrunfile(dir: str, box: int, ppn: int) -> None:
+    """make a run.sh file to run"""
     totalrunfile = os.path.join(dir, "totalrun.sh")
     runinput = header.qsubheader(ppn=ppn)
     runinput += "test ${PBS_NP} || PBS_NP=8\n"
@@ -146,5 +150,3 @@ done
     with open(totalrunfile, mode="w") as f:
         f.write(runinput)
     os.chmod(totalrunfile, 0o755)
-
-
