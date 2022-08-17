@@ -131,6 +131,7 @@ cd minimize
 cd heat
 {heat.heatcontent()}
 ) || exit $?
+topfile="../../../top/leap.parm7"
 rstfile="../../heat/md9.rst7"
 cd pr
 for i in `seq 1 {box}`; do
