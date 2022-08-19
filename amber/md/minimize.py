@@ -1,5 +1,6 @@
 from amber.md import header
 
+
 def min1input() -> str:
     """Template file for min1.in"""
 
@@ -28,6 +29,7 @@ def min1input() -> str:
 
     return min1_template
 
+
 def min2input() -> str:
     """Template file for min2.in"""
 
@@ -53,6 +55,7 @@ def min2input() -> str:
 """
 
     return min2_template
+
 
 def minimizercontent() -> str:
     """process of minimize/run.sh"""
@@ -81,10 +84,10 @@ ambpdb -p ${topfile} -c min2.rst7 > min2.pdb
     return content
 
 
-def runinput(ppn: int = 16) -> str:
+def runinput(machineenv: str) -> str:
     """content of minimize/run.sh"""
 
-    runinput = header.qsubheader(ppn=ppn)
+    runinput = header.qsubheader(machineenv=machineenv)
     runinput += "test ${PBS_NP} || PBS_NP=8\n"
     runinput += minimizercontent()
 

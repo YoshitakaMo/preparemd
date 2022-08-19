@@ -1,7 +1,7 @@
 from amber.md import header
 
 
-def productioninput(restart_input: str, box: int, ns_per_box: int) -> str:
+def productioninput(restart_input: str, ns_per_box: int) -> str:
     # simulation timeはns_per_box(ns)になるように指定
     simulationtime = ns_per_box * 500000
 
@@ -41,10 +41,10 @@ DUMPAVE=dist1.dat
     return prod_template
 
 
-def runinput(prevrstfile: str, ppn: int = 16) -> str:
+def runinput(prevrstfile: str, machineenv: str) -> str:
     """Template file for pr/00x/run.sh"""
 
-    qsub_template = header.qsubheader(ppn=ppn)
+    qsub_template = header.qsubheader(machineenv=machineenv)
     run_template = (
         qsub_template
         + f"""

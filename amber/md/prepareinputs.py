@@ -5,7 +5,9 @@ from amber.md import production
 from amber.md import header
 
 
-def write_minimizeinput(dir: str, ppn: int = 16, minimizedir: str = "minimize") -> None:
+def write_minimizeinput(
+    dir: str, machineenv: str, minimizedir: str = "minimize"
+) -> None:
     """make AMBER inputfiles for minimization"""
     if not os.path.exists(os.path.join(dir, minimizedir)):
         os.makedirs(os.path.join(dir, minimizedir))
@@ -15,7 +17,7 @@ def write_minimizeinput(dir: str, ppn: int = 16, minimizedir: str = "minimize") 
 
     min1input = minimize.min1input()
     min2input = minimize.min2input()
-    runinput = minimize.runinput(ppn=ppn)
+    runinput = minimize.runinput(machineenv=machineenv)
 
     with open(min1file, mode="w") as f:
         f.write(min1input)
@@ -27,7 +29,9 @@ def write_minimizeinput(dir: str, ppn: int = 16, minimizedir: str = "minimize") 
     os.chmod(runfile, 0o755)
 
 
-def write_heatinput(dir, residuenum: int, ppn: int = 16, heatdir: str = "heat") -> None:
+def write_heatinput(
+    dir, residuenum: int, machineenv: str, heatdir: str = "heat"
+) -> None:
     """make AMBER inputfiles for equilibration
     Args:
         dir: 出力先のディレクトリ名
@@ -70,14 +74,14 @@ DUMPAVE=dist1.dat
             f.write(md_i)
 
         runfile = os.path.join(dir, heatdir, "run.sh")
-        runinput = heat.runinput()
+        runinput = heat.runinput(machineenv=machineenv)
         with open(runfile, mode="w") as f:
             f.write(runinput)
         os.chmod(runfile, 0o755)
 
 
 def write_productioninput(
-    dir, ppn: int = 16, box: int = 3, ns_per_mddir: int = 50, productiondir="pr"
+    dir, machineenv: str, box: int = 3, ns_per_mddir: int = 50, productiondir="pr"
 ) -> None:
     """make AMBER input files for production run"""
     if not os.path.exists(os.path.join(dir, productiondir)):
@@ -101,7 +105,7 @@ def write_productioninput(
         else:
             restart_input = """irest=0,              ! DO NOT restart MD simulation from a previous run.
     ntx=1,                ! Coordinates and velocities will not be read."""
-        mdinput = production.productioninput(restart_input, box, ns_per_mddir)
+        mdinput = production.productioninput(restart_input, ns_per_mddir)
         mdfile = os.path.join(dir, productiondir, box_zero, "md.in")
         with open(mdfile, mode="w") as f:
             f.write(mdinput)
@@ -109,7 +113,7 @@ def write_productioninput(
         runfile = os.path.join(dir, productiondir, box_zero, "run.sh")
         if i == 1:
             prevrstfile = "../../heat/md9.rst7"  # heat直後のrstファイル。
-        runinput = production.runinput(prevrstfile, ppn=ppn)
+        runinput = production.runinput(prevrstfile, machineenv=machineenv)
         with open(runfile, mode="w") as f:
             f.write(runinput)
         os.chmod(runfile, 0o755)
@@ -117,10 +121,10 @@ def write_productioninput(
         prevrstfile = os.path.join("..", box_zero, "md.rst7")
 
 
-def write_totalrunfile(dir: str, box: int, ppn: int) -> None:
+def write_totalrunfile(dir: str, box: int, machineenv: str) -> None:
     """make a run.sh file to run"""
     totalrunfile = os.path.join(dir, "totalrun.sh")
-    runinput = header.qsubheader(ppn=ppn)
+    runinput = header.qsubheader(machineenv=machineenv)
     runinput += "test ${PBS_NP} || PBS_NP=8\n"
     runinput += f"""
 (

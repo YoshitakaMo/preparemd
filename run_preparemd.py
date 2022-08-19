@@ -80,7 +80,7 @@ def run_pdb4amber(
 
 
 def prepareamberfiles(
-    distdir: str, residuenum: int, box: int, ns_per_mddir: int, ppn: int = 16
+    distdir: str, residuenum: int, box: int, ns_per_mddir: int, machineenv: str
 ) -> None:
     """prepare AMBER input files for minimize, heat, and pr directories
 
@@ -89,15 +89,19 @@ def prepareamberfiles(
         residuenum: 系に存在する残基数。position restraintsをかける対象の原子の残基範囲と一致する。
         box: prディレクトリ内部に作成するサブディレクトリ数(001, 002, ...)。
         ns_per_mddir: 上記のサブディレクトリにつき、何nsのシミュレーションを行うか。
-        ppn: CPUの数
+        machineenv: どこでMDを実行するか
     """
     outputdir = os.path.join(distdir, "amber")
     if not os.path.exists(outputdir):
         os.makedirs(outputdir)
-    prepareinputs.write_minimizeinput(outputdir)
-    prepareinputs.write_heatinput(outputdir, residuenum=residuenum)
-    prepareinputs.write_productioninput(outputdir, box=box, ns_per_mddir=ns_per_mddir)
-    prepareinputs.write_totalrunfile(outputdir, box=box, ppn=ppn)
+    prepareinputs.write_minimizeinput(outputdir, machineenv=machineenv)
+    prepareinputs.write_heatinput(
+        outputdir, residuenum=residuenum, machineenv=machineenv
+    )
+    prepareinputs.write_productioninput(
+        outputdir, machineenv=machineenv, box=box, ns_per_mddir=ns_per_mddir
+    )
+    prepareinputs.write_totalrunfile(outputdir, box=box, machineenv=machineenv)
 
 
 def get_boxsize_from_pre2(pre2file: str):
@@ -319,7 +323,14 @@ flags.DEFINE_string(
     "This file format is the same as an output sslink file of pdb4amber. "
     "Set this value if you have a correct pair SS-bond list.",
 )
-flags.DEFINE_integer("ppn", 16, "number of cpus to calculate.")
+flags.DEFINE_enum(
+    "machineenv",
+    "yayoi",
+    ["yayoi", "brillantegw3", "flow", "wisteria"],
+    "Choose server clusters where you want to run. "
+    "This will change the qsub/pjsub header lines. "
+    "Default: yayoi",
+)
 flags.DEFINE_boolean(
     "run_leap",
     True,
@@ -356,7 +367,9 @@ def main(argv):
     )
     if FLAGS.run_leap:
         run_leap(FLAGS.distdir, FLAGS.boxsize, pre2boxsize)
-    prepareamberfiles(FLAGS.distdir, resnumber, FLAGS.num_mddir, FLAGS.ns_per_mddir)
+    prepareamberfiles(
+        FLAGS.distdir, resnumber, FLAGS.num_mddir, FLAGS.ns_per_mddir, FLAGS.machineenv
+    )
     writetrajfix.writetrajfix(
         FLAGS.distdir, resnumber, FLAGS.num_mddir, FLAGS.trajprefix
     )

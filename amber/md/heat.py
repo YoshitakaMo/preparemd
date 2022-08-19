@@ -1,11 +1,14 @@
 from amber.md import header
 
-def heatinput(restart_input: str,
-              simtime: int,
-              annealing: str,
-              residuenum: int,
-              weights: list,
-              number: int) -> str:
+
+def heatinput(
+    restart_input: str,
+    simtime: int,
+    annealing: str,
+    residuenum: int,
+    weights: list,
+    number: int,
+) -> str:
     """Write md[1-9].in file"""
     heat_template = f"""Heat system (constant volume)
 &cntrl
@@ -73,9 +76,8 @@ ambpdb -p ${topfile} -c md9.rst7 > md9.pdb
     return content
 
 
-def runinput(ppn: int = 16) -> str:
+def runinput(machineenv: str) -> str:
     """content of heat/run.sh"""
-    runinput = header.qsubheader(ppn=ppn)
+    runinput = header.qsubheader(machineenv=machineenv)
     runinput += heatcontent()
     return runinput
-
