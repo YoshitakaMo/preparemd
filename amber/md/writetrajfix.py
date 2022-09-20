@@ -40,7 +40,7 @@ center :1-{resnumber}@CA mass origin
 rms first out rmsd.dat @CA
 strip :SOD,WAT,TIP3,Cl-,Na+
 
-trajout {suffix}comp.trr
+trajout {suffix}traj.trr
 go
 """
     with open(trajfixfile, mode="w") as f:

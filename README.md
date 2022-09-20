@@ -27,7 +27,7 @@ BILABのチュートリアルに沿って、入力とするpdbファイルから
 - Python3（> 3.6）以上で、Pythonライブラリの依存を解決しておく。
 
 ```bash
-python3.9 -m pip install absl-py biopython
+python3.10 -m pip install absl-py biopython
 ```
 
 GitHubからこのコードを適当なディレクトリにダウンロードする。
@@ -50,9 +50,10 @@ git pull origin main
 仕様上、指定可能な引数が多く設定されていますので1つ1つ確認していってください。
 
 ```bash
-python3.9 ~/apps/preparemd/run_preparemd.py \
+python3.10 ~/apps/preparemd/run_preparemd.py \
     --file=/path/to/your/foo.pdb \
     --distdir=/path/to/your/targetdirectory \
+    --fftype="ff19SB"
     --num_mddir=3 \
     --ns_per_mddir=50 \
     --boxsize="120 120 120" \
@@ -60,11 +61,17 @@ python3.9 ~/apps/preparemd/run_preparemd.py \
     --strip=":793-807,864-878" \
     --sslink=/path/to/pre_sslink \
     --rotate="rotate z 45" \
-    --machineenv="yayoi"
+    --machineenv="yayoi" \
+    --trajprefix="foo" \
+    --frcmod="/path/to/frcmod.lig1 /path/to/frcmod.lig2" \
+    --prep="/path/to/prep1.prep /path/to/prep2.prep" \
+    --mol2="ACA = loadMol2 Acetyl_CoA.mol2" \
+    --mol2="DON = loadMol2 DON.mol2"
 ```
 
 - `--file`は入力とするPDB**ファイルパス**。**実行に必須**。**AlphaFoldで出力されてきたPDBフォーマットにも対応している**。
 - `--distdir`は出力先の**ディレクトリ名**。**実行に必須**。この中にトポロジーファイルを含む`top`ディレクトリとMDの実行ファイル`amber/{minimize,heat,pr}`を生成する。
+- `--fftype`は`ff14SB`と`ff19SB`のいずれかを指定する。力場の指定。デフォルトは最新の`ff19SB`だが、以前の結果と合わせる場合には`ff14SB`を使うと良い。
 - `--num_mddir`は`amber/pr`ディレクトリ内に指定した数分だけのprodution run実行サブディレクトリを生成する。ナンバリングは3桁になるよう0埋めされる（例：`001`, `002`, `003`,...)。デフォルトは`3`。
 - `--ns_per_mddir`は各production runサブディレクトリあたりで実行されるMDシミュレーションの上限時間(ns)。デフォルトは`50`。
 - `--boxsize`はMDシミュレーションを実行するときの周期境界ボックスのサイズ。 **必ず`"x y z"`のように3つ組の整数値を入れる**。指定しない場合は、溶質の大きさに応じてその周囲10Åを余分にとった大きさになる。異方性の大きい溶質の場合（例：SRK, SP11複合体）のときなどは、立方体になるよう明示的に指定したほうが良い。
@@ -73,6 +80,9 @@ python3.9 ~/apps/preparemd/run_preparemd.py \
 - `--sslink`は正しいSS結合を形成するCYS残基の残基番号ペアの情報を含むsslinkファイルへのパスを指定する。フォーマットは後述。このオプションが指定されない場合は、入力とするpdbファイルの構造から自動的に適切と思われるSS結合情報を取得し、SS結合を形成する。
 - `--rotate`を指定すると、AmberToolsの`cpptraj`内で使われるrotateコマンドを使って指定した軸回りに入力pdbの構造を回転させてからleap処理を実行する。例えば`--rotate "rotate z 45"`はz軸回りに45°回転させるというもの。
 - `--machineenv`は計算機環境を指定する。これはMDを動かす`run.sh`のヘッダー部分を変化させる。現在のところ`brillantegw3`, `yayoi`, `wisteria`, `flow`を用意している。デフォルトは`yayoi`。
+- `--trajprefix`は`trajfix.in`の中で出力される予定の`init.pdb`と`traj.trr`のファイルの先頭につけるプレフィックス文字。
+- `--frcmod`, `--prep`はそれぞれ追加の力場パラメータ、小分子パラメータ（prep形式）へのファイルパスを指定。**スペース区切りで複数入力可能。これらのファイルはすべて`top`ディレクトリにコピーされる。**
+- `--mol2`ファイルはmol2形式の追加の小分子パラメータへのファイルパス。これはAMBERの`leap.in`に書く方法と同じ。**複数回指定可能。**
 - `--norun_leap`を指定すると、`leap.parm7`や`leap.rst7`ファイルを生成しないがその他のファイルを生成する。leap処理を機械的に行うことが難しいために、手動でleap部分だけ調整しておきたいという人向け。
 
 sslinkファイルのフォーマットは以下の通り。これはpdb4amberコマンドで生成されるフォーマットと同じ。各番号は入力とするpdbファイルのN末端から通して数えたときの残基番号。またこの残基番号がCYSでない場合はエラーとなる。

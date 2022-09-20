@@ -269,15 +269,19 @@ def cys_to_cyx_in_pre2file(distdir: str, sslink_file: str) -> None:
 
 
 # %%
-flags.DEFINE_string("file", None, "Path to input pdb file.")
+flags.DEFINE_string("file", None, "Path to input pdb file.", short_name="f")
 flags.DEFINE_string(
-    "distdir", None, "Path to a directory that will " "store top and amber files."
+    "distdir",
+    None,
+    "Path to a directory that will " "store top and amber files.",
+    short_name="o",
 )
 flags.DEFINE_string(
     "strip",
     "",
     "If provided, the specified region will be removed from "
     "MD simulations. This is useful for signal peptides, for example.",
+    short_name="s",
 )
 flags.DEFINE_integer(
     "num_mddir",
@@ -315,6 +319,7 @@ flags.DEFINE_string(
     "trajprefix",
     "",
     "prefix of trajectory. " 'This is used in the "trajfix.in" file. e.g. "S36S36". ',
+    short_name="t",
 )
 flags.DEFINE_string(
     "sslink",
@@ -330,6 +335,28 @@ flags.DEFINE_enum(
     "Choose server clusters where you want to run. "
     "This will change the qsub/pjsub header lines. "
     "Default: yayoi",
+    short_name="m",
+)
+flags.DEFINE_spaceseplist(
+    "frcmod",
+    None,
+    "Path to additional frcmod files. Multiple files can be specified, separated by spaces.",
+)
+flags.DEFINE_spaceseplist(
+    "prep",
+    None,
+    "Path to additional AMBER prep files. Multiple files can be specified, separated by spaces.",
+)
+flags.DEFINE_multi_string(
+    "mol2",
+    None,
+    "Path to additional mol2 files. The flag can be specified more than once on the command line.",
+)
+flags.DEFINE_enum(
+    "fftype",
+    "ff19SB",
+    ["ff14SB", "ff19SB"],
+    "Choose AMBER force field type." "Default: ff19SB",
 )
 flags.DEFINE_boolean(
     "run_leap",
@@ -364,6 +391,10 @@ def main(argv):
         pre2boxsize=pre2boxsize,
         ion_conc=FLAGS.ion_conc,
         sslink_file=sslink_file,
+        fftype=FLAGS.fftype,
+        frcmod=FLAGS.frcmod,
+        prep=FLAGS.prep,
+        mol2=FLAGS.mol2,
     )
     if FLAGS.run_leap:
         run_leap(FLAGS.distdir, FLAGS.boxsize, pre2boxsize)
@@ -384,33 +415,3 @@ if __name__ == "__main__":
     )
 
     app.run(main)
-
-# 以下テスト用コード
-# #%%
-# file = "./ranked_0.pdb"
-# distdir = "rank0"
-# strip = ":793-807,864-878"
-# num_mddir = 4
-# ns_per_mddir = 30
-# ion_conc = 150
-# boxsize = "120 120 120"
-# rotate = ""
-# sslink = "./rank1/top/pre_sslink"
-# ppn = 16
-# #%%
-# resnumber, sslink_file = run_pdb4amber(file,
-#                                        distdir,
-#                                        strip=strip,
-#                                        sslink_file=sslink)
-# pre2boxsize = preparepre2file(distdir,
-#                               rotate=rotate,
-#                               sslink_file=sslink_file)
-# cys_to_cyx_in_pre2file(distdir, sslink_file=sslink_file)
-# makeleapin.makeleapin(distdir,
-#                       boxsize=boxsize,
-#                       pre2boxsize=pre2boxsize,
-#                       ion_conc=ion_conc,
-#                       sslink_file=sslink_file)
-# run_leap(distdir, boxsize, pre2boxsize)
-# prepareamberfiles(distdir, resnumber, num_mddir, ns_per_mddir, ppn)
-# %%
