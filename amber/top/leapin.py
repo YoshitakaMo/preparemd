@@ -67,17 +67,10 @@ def additional_params(frcmod: list, prep: list, mol2: list) -> str:
     if frcmod is not None:
         for i in frcmod:
             file = os.path.split(i)[1]
-            if not os.path.exists(file):
-                logging.error(f"Could not find frcmod file, {file}")
-                raise ValueError(f"Could not find frcmod file, {file}")
-
             params += f"loadAmberParams {file}\n"
     if prep is not None:
         for i in prep:
             file = os.path.split(i)[1]
-            if not os.path.exists(file):
-                logging.error(f"Could not find prep file, {file}")
-                raise ValueError(f"Could not find prep file, {file}")
             params += f"loadAmberPrep {file}\n"
     if mol2 is not None:
         for i in mol2:
@@ -86,7 +79,10 @@ def additional_params(frcmod: list, prep: list, mol2: list) -> str:
             # objnameに'ACA'が入るようにする
             objname = [a for a in re.split("=| |loadMol2", i) if a != ""][0]
             filepath = [a for a in re.split("=| |loadMol2", i) if a != ""][1]
-            params += f"{objname} = loadMol2 {filepath}\n"
+            # この時点でfilepathは相対パスのみ。
+            # ここでfilepathからファイル名のみ取り出す。
+            basename = os.path.basename(filepath)
+            params += f"{objname} = loadMol2 {basename}\n"
 
     return params
 
