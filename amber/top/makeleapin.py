@@ -19,20 +19,21 @@ def filecopy(val: list, distdir: str) -> None:
 
 def filecopy_mol2(mol2: list, distdir: str) -> None:
     # valがmol2の場合
-    for i in mol2:
-        # iは'ACA = loadMol2 Acetyl_CoA.mol2', 'DON = loadMol2 DON.mol2'のような形式
-        # 'loadMol2'の後のファイルパスを修正し、distdirディレクトリ内のものを使用するようにする
-        if "loadMol2" not in i:
-            logging.error(f"'loadMol2' was not detected in str, {i}.")
-            raise ValueError(f"'loadMol2' was not detected in str, {i}.")
+    if mol2 is not None:
+        for i in mol2:
+            # iは'ACA = loadMol2 Acetyl_CoA.mol2', 'DON = loadMol2 DON.mol2'のような形式
+            # 'loadMol2'の後のファイルパスを修正し、distdirディレクトリ内のものを使用するようにする
+            if "loadMol2" not in i:
+                logging.error(f"'loadMol2' was not detected in str, {i}.")
+                raise ValueError(f"'loadMol2' was not detected in str, {i}.")
 
-        filepath = [a for a in re.split("=| |loadMol2", i) if a != ""][1]
-        if not os.path.exists(filepath):
-            logging.error(f"Could not find {filepath}.")
-            raise ValueError(f"Could not find {filepath}.")
-        else:
-            logging.info(f"Copying {filepath} to the top directory")
-            shutil.copy2(filepath, os.path.join(distdir, "top"))
+            filepath = [a for a in re.split("=| |loadMol2", i) if a != ""][1]
+            if not os.path.exists(filepath):
+                logging.error(f"Could not find {filepath}.")
+                raise ValueError(f"Could not find {filepath}.")
+            else:
+                logging.info(f"Copying {filepath} to the top directory")
+                shutil.copy2(filepath, os.path.join(distdir, "top"))
 
 
 def makeleapin(
