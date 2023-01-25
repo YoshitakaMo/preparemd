@@ -34,12 +34,14 @@ test $PBS_O_WORKDIR && cd $PBS_O_WORKDIR
 # run the environment module
 if test -f /home/apps/Modules/init/profile.sh; then
     . /home/apps/Modules/init/profile.sh
+    module load amber22
 elif test -f /usr/local/Modules/init/profile.sh; then
     . /usr/local/Modules/init/profile.sh
+    module load amber22
 elif test -f /usr/share/Modules/init/profile.sh; then
     . /usr/share/Modules/init/profile.sh
+    module load amber22
 fi
-module load amber22
 """
     elif machineenv == "brillantegw3":
         pbsheader = """#!/bin/bash
@@ -51,12 +53,14 @@ test $PBS_O_WORKDIR && cd $PBS_O_WORKDIR
 # run the environment module
 if test -f /home/apps/Modules/init/profile.sh; then
     . /home/apps/Modules/init/profile.sh
+    module load amber22
 elif test -f /usr/local/Modules/init/profile.sh; then
     . /usr/local/Modules/init/profile.sh
+    module load amber22
 elif test -f /usr/share/Modules/init/profile.sh; then
     . /usr/share/Modules/init/profile.sh
+    module load amber22
 fi
-module load amber22
 """
 
     return pbsheader
