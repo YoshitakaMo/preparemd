@@ -1,6 +1,5 @@
 import os
 import re
-from absl import logging
 
 
 def boxsize_checker(boxsize: str) -> str:
@@ -121,7 +120,7 @@ def leapininput(
 
     if boxsize == "":
         boxsize = pre2boxsize
-        boxmargin = 10
+        boxmargin = 10.0
     else:
         boxmargin = 0.01
 
@@ -138,6 +137,7 @@ source leaprc.gaff2
 
 #追加のイオンの力場の導入
 loadAmberParams frcmod.ionsjc_tip3p"""
+        solvateboxtype = "TIP3PBOX"
     elif fftype == "ff19SB":
         prot_wat_forcefield = """#AMBER の力場パラメータff19SBとOPC力場を読み込む
 source leaprc.protein.ff19SB
@@ -146,6 +146,7 @@ source leaprc.gaff2
 
 #ff19SBはOPC水モデルと組み合わせる。TIP3P水モデルとは組み合わせてはならない
 loadAmberParams frcmod.opc"""
+        solvateboxtype = "OPCBOX"
 
     additionalparams = additional_params(frcmod, prep, mol2)
 
@@ -165,7 +166,7 @@ addIons2 mol Na+ {ionnum}
 addIons2 mol Cl- 0
 
 #ボックスの周りに更に{boxmargin}Aのボックスを設置し、溶媒和させる。
-solvateBox mol TIP3PBOX {boxmargin}
+solvateBox mol {solvateboxtype} {boxmargin}
 #最後に、"mol"という溶媒和ボックスの系の電荷情報を表示する。0.00000になっていることが理想。
 charge mol
 
