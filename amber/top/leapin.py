@@ -86,7 +86,7 @@ def additional_params(frcmod: list, prep: list, mol2: list) -> str:
     return params
 
 
-def get_sspair_from_sslink_file(sslink_file) -> dict:
+def get_sspair_from_sslink_file(sslink_file) -> str:
     """sslink_fileから結合情報をleap.inに書き出す。
     例として
     bond mol.262.SG mol.274.SG
