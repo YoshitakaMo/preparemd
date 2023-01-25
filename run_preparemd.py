@@ -10,6 +10,7 @@ from absl import flags
 from amber.md import prepareinputs
 from amber.md import writetrajfix
 from amber.top import makeleapin
+from typing import List
 
 logging.set_verbosity(logging.INFO)
 
@@ -165,7 +166,7 @@ go
     return boxsize
 
 
-def get_resultboxsize(logfile: str) -> dict:
+def get_resultboxsize(logfile: str) -> List[str]:
     """Get Box size info from leap.log"""
     with open(logfile) as f:
         lines = [line.strip() for line in f.readlines()]
@@ -178,7 +179,7 @@ def get_resultboxsize(logfile: str) -> dict:
     return result_boxsize_dict
 
 
-def get_charge(logfile: str) -> dict:
+def get_charge(logfile: str) -> List[str]:
     """Get Total perturbed charge info from leap.log"""
     with open(logfile) as f:
         lines = [line.strip() for line in f.readlines()]
