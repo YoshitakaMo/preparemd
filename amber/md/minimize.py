@@ -23,7 +23,7 @@ def min1input() -> str:
     ncyc=100,          ! If "ntmin" is 1, the method of minimization will be switched from steepest descent to conjugate gradient after NCYC cycles. Default 10.
     nstlim=2000,       ! number of MD-steps to be performed.
     nscm=0,            ! Flag for the removal of translational and rotational center-of-mass
-    jfastw=0,watnam='TIP3',OWTNM='OH2',hwtnm1='H1',hwtnm2='H2',
+    jfastw=0,
  /
 """
 
@@ -50,7 +50,7 @@ def min2input() -> str:
     ncyc=100,          ! If "ntmin" is 1, the method of minimization will be switched from steepest descent to conjugate gradient after NCYC cycles. Default 10.
     nstlim=2000,       ! number of MD-steps to be performed.
     nscm=0,            ! Flag for the removal of translational and rotational center-of-mass
-    jfastw=0,watnam='TIP3',OWTNM='OH2',hwtnm1='H1',hwtnm2='H2',
+    jfastw=0,
  /
 """
 
