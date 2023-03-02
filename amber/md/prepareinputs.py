@@ -52,7 +52,7 @@ def write_heatinput(
             simtime = 100000
             annealing = """ /
 &wt TYPE='TEMP0', istep1=0, istep2=100000,
-    value1=100.0, value2=300.0, /
+    value1=10.0, value2=300.0, /
 &wt TYPE='END'
 """
         else:

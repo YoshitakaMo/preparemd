@@ -29,7 +29,7 @@ def heatinput(
     ntt=3,                          ! Langevin thermostat
     gamma_ln=2.0,                   ! Collision frequency for thermostat
     ig=-1,                          ! Random seed for Langevin thermostat
-    tempi=100.0,                    ! Initial Temperature. For the initial dynamics run, (NTX < 3) the velocities are assigned from a Maxwellian distribution at TEMPI K.
+    tempi=10.0,                     ! Initial Temperature. For the initial dynamics run, (NTX < 3) the velocities are assigned from a Maxwellian distribution at TEMPI K.
     temp0=300.0,                    ! Reference temperature at which the system is to be kept.
     ntr=1,                          ! Harmonic position restraints ON. The restrained atoms are determined by the restraintmask string.
     restraintmask=':1-{residuenum} & !@H=',  ! String that specifies the restrained atoms when ntr=1.
