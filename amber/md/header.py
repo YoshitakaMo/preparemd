@@ -14,14 +14,13 @@ module load amber22
         pbsheader = """#!/bin/bash
 #PJM -L rscunit=cx
 #PJM -L rscgrp=cx-share
-#PJM -L node=1
 #PJM -L elapse=72:00:00
 #PJM -j
 # move to working directory
 test $PJM_O_WORKDIR && cd $PJM_O_WORKDIR
 
 . /usr/share/Modules/init/sh
-module use -a /data/group1/z44683r/modulefiles
+module use -a /data/group1/z44243z/modulefiles
 module load amber22
 """
     elif machineenv == "yayoi":
