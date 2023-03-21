@@ -50,6 +50,8 @@ def write_heatinput(
             restart_input = """irest=0,                        ! DO NOT restart MD simulation from a previous run.
     ntx=1,                          ! Coordinates and velocities will not be read"""
             simtime = 100000
+            ntp = "ntp=0,                          ! No pressure scaling (Default)"
+            ntb = "ntb=1,                          ! Constant Volume. NVT simulation."
             temperature = """tempi=10.0,                     ! Initial Temperature. For the initial dynamics run, (NTX < 3) the velocities are assigned from a Maxwellian distribution at TEMPI K.tempi=10.0,                     ! Initial Temperature. For the initial dynamics run, (NTX < 3) the velocities are assigned from a Maxwellian distribution at TEMPI K.
     temp0=300.0,                    ! Reference temperature at which the system is to be kept."""
             annealing = """ /
@@ -61,6 +63,8 @@ def write_heatinput(
             restart_input = """irest=1,                        ! Restart MD simulation from a previous run.
     ntx=5,                          ! Coordinates and velocities will be read from a previous run."""
             simtime = 50000
+            ntp = "ntp=1,                          ! MD simulations with isotropic position scaling"
+            ntb = "ntb=2,                          ! Constant Pressure. NPT simulation."
             temperature = "temp0=300.0,                    ! Reference temperature at which the system is to be kept."
             annealing = """ /
 &wt
@@ -72,7 +76,15 @@ DUMPAVE=dist1.dat
 """
 
         md_i = heat.heatinput(
-            restart_input, simtime, annealing, residuenum, weights, i, temperature
+            restart_input,
+            simtime,
+            ntp,
+            ntb,
+            annealing,
+            residuenum,
+            weights,
+            i,
+            temperature,
         )
         mdfile = os.path.join(dir, heatdir, f"md{i}.in")
         with open(mdfile, mode="w") as f:

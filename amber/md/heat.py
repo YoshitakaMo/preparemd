@@ -4,6 +4,8 @@ from amber.md import header
 def heatinput(
     restart_input: str,
     simtime: int,
+    ntp: str,
+    ntb: str,
     annealing: str,
     residuenum: int,
     weights: list,
@@ -19,7 +21,8 @@ def heatinput(
     dt=0.002,                       ! Timestep (ps)
     igb=0,                          ! No generalized Born term is used (Default)
     ntp=0,                          ! No pressure scaling (Default)
-    ntb=1,                          ! Constant Volume. NVT simulation.
+    {ntp}
+    {ntb}
     ntc=2,                          ! SHAKE on for bonds involving hydrogen atoms
     ntf=2,                          ! No force evaluation for bonds with hydrogen
     cut=8.0,                        ! Nonbonded cutoff (Angstroms)
