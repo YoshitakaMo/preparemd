@@ -50,6 +50,8 @@ def write_heatinput(
             restart_input = """irest=0,                        ! DO NOT restart MD simulation from a previous run.
     ntx=1,                          ! Coordinates and velocities will not be read"""
             simtime = 100000
+            temperature = """tempi=10.0,                     ! Initial Temperature. For the initial dynamics run, (NTX < 3) the velocities are assigned from a Maxwellian distribution at TEMPI K.tempi=10.0,                     ! Initial Temperature. For the initial dynamics run, (NTX < 3) the velocities are assigned from a Maxwellian distribution at TEMPI K.
+    temp0=300.0,                    ! Reference temperature at which the system is to be kept."""
             annealing = """ /
 &wt TYPE='TEMP0', istep1=0, istep2=100000,
     value1=10.0, value2=300.0, /
@@ -59,6 +61,7 @@ def write_heatinput(
             restart_input = """irest=1,                        ! Restart MD simulation from a previous run.
     ntx=5,                          ! Coordinates and velocities will be read from a previous run."""
             simtime = 50000
+            temperature = "temp0=300.0,                    ! Reference temperature at which the system is to be kept."
             annealing = """ /
 &wt
     type='DUMPFREQ', istep1=5000,
@@ -68,7 +71,9 @@ DISANG=dist1.rst
 DUMPAVE=dist1.dat
 """
 
-        md_i = heat.heatinput(restart_input, simtime, annealing, residuenum, weights, i)
+        md_i = heat.heatinput(
+            restart_input, simtime, annealing, residuenum, weights, i, temperature
+        )
         mdfile = os.path.join(dir, heatdir, f"md{i}.in")
         with open(mdfile, mode="w") as f:
             f.write(md_i)
