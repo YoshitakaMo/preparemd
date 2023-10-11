@@ -1,4 +1,4 @@
-from amber.md import header
+from preparemd.amber.md import header
 
 
 def productioninput(restart_input: str, ns_per_box: int) -> str:

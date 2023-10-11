@@ -2,7 +2,7 @@ import os
 import re
 import shutil
 from absl import logging
-from amber.top import leapin
+from preparemd.amber.top import leapin
 
 
 def filecopy(val: list, distdir: str) -> None:
@@ -51,7 +51,7 @@ def makeleapin(
     パラメータファイル（frcmod, prep, mol2）はdistdir内にコピーする
     """
     if not os.path.exists(os.path.join(distdir)):
-        os.makedistdirs(os.path.join(distdir))
+        os.makedirs(os.path.join(distdir))
     leapinfile = os.path.join(distdir, "top", "leap.in")
 
     filecopy(frcmod, distdir)

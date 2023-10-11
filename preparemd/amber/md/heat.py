@@ -1,4 +1,4 @@
-from amber.md import header
+from preparemd.amber.md import header
 
 
 def heatinput(

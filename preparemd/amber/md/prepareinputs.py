@@ -1,8 +1,8 @@
 import os
-from amber.md import minimize
-from amber.md import heat
-from amber.md import production
-from amber.md import header
+from preparemd.amber.md import minimize
+from preparemd.amber.md import heat
+from preparemd.amber.md import production
+from preparemd.amber.md import header
 
 
 def write_minimizeinput(

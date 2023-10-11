@@ -14,6 +14,7 @@ module load amber22
         pbsheader = """#!/bin/bash
 #PJM -L rscunit=cx
 #PJM -L rscgrp=cx-share
+#PJM -L gpu=1
 #PJM -L elapse=72:00:00
 #PJM -j
 # move to working directory

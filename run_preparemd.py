@@ -7,9 +7,9 @@ import Bio.PDB
 from absl import logging
 from absl import app
 from absl import flags
-from amber.md import prepareinputs
-from amber.md import writetrajfix
-from amber.top import makeleapin
+from preparemd.amber.md import prepareinputs
+from preparemd.amber.md import writetrajfix
+from preparemd.amber.top import makeleapin
 from typing import List
 
 logging.set_verbosity(logging.INFO)
