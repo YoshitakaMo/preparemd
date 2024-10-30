@@ -1,0 +1,61 @@
+[project]
+name = "preparemd"
+version = "0.0.1"
+description = "Python package to prepare files for MD simulations"
+readme = "README.md"
+license = { file = "LICENSE" }
+classifiers = [
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    'Operating System :: Microsoft :: Windows',
+    'Operating System :: POSIX',
+    'Operating System :: Unix',
+    'Operating System :: MacOS',
+]
+requires-python = ">=3.11"
+dependencies = ["absl-py","biopython"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+dev-dependencies = ["mypy", "notebook", "pytest", "ruff"]
+
+[tool.ruff]
+select = [
+    "F", # Flake8
+    "B", # Black
+    "I", # isort
+    "E", # error
+    "W", # warning
+]
+ignore = []
+exclude = [".ruff_cache", ".ruff.toml", ".ruff.lock"]
+indent-width = 4
+line-length = 88 # Same as Black.
+target-version = "py311"
+fixable = ["ALL"] # Allow fix for all enabled rules (when `--fix`) is provided.
+unfixable = []
+
+[tool.ruff.isort]
+combine-as-imports = true
+section-order = ["future", "standard-library", "third-party", "first-party", "local-folder"]
+split-on-trailing-comma = true
+
+[tool.ruff.format]
+quote-style = "double" # Like Black, use double quotes for strings.
+
+[tool.ruff.lint.isort]
+known-third-party = ["fastapi", "pydantic", "starlette"]
+
+[tool.pytest.ini_options]
+addopts = "-v --color=yes --cov=complexbuilder --cov-report=term-missing"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["preparemd"]

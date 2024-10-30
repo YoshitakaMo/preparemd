@@ -1,8 +1,7 @@
 import os
-from preparemd.amber.md import minimize
-from preparemd.amber.md import heat
-from preparemd.amber.md import production
-from preparemd.amber.md import header
+import textwrap
+
+from preparemd.amber.md import header, heat, minimize, production
 
 
 def write_minimizeinput(
@@ -35,10 +34,11 @@ def write_heatinput(
     """make AMBER inputfiles for equilibration
     Args:
         dir: 出力先のディレクトリ名
-        residuenum: 入力pdbファイルの残基数。heatのときにposition restraintsをかける範囲指定のために必要。
+        residuenum: 入力pdbファイルの残基数。
+                    heatのときにposition restraintsをかける範囲指定のために必要。
         heatdir: 出力先のディレクトリ名で作るheatのインプットファイルを入れるディレクトリ名。
         初期値は"heat"
-    """
+    """  # noqa: E501
     if not os.path.exists(os.path.join(dir, heatdir)):
         os.makedirs(os.path.join(dir, heatdir))
     # 徐々にrestraint_wtの値を小さくしていく
@@ -47,25 +47,31 @@ def write_heatinput(
         # md1.inにはirest=0, ntx=1、md2-md9.inにはirest=1, ntx=5を指定する。
         is_md1 = True if i == 1 else False
         if is_md1:
-            restart_input = """irest=0,                        ! DO NOT restart MD simulation from a previous run.
-    ntx=1,                          ! Coordinates and velocities will not be read"""
+            restart_input = textwrap.dedent(
+                """irest=0,                        ! DO NOT restart MD simulation from a previous run.
+                   ntx=1,                          ! Coordinates and velocities will not be read"""  # noqa: E501
+            )
             simtime = 100000
             ntp = "ntp=0,                          ! No pressure scaling (Default)"
             ntb = "ntb=1,                          ! Constant Volume. NVT simulation."
-            temperature = """tempi=10.0,                     ! Initial Temperature. For the initial dynamics run, (NTX < 3) the velocities are assigned from a Maxwellian distribution at TEMPI K.tempi=10.0,                     ! Initial Temperature. For the initial dynamics run, (NTX < 3) the velocities are assigned from a Maxwellian distribution at TEMPI K.
-    temp0=300.0,                    ! Reference temperature at which the system is to be kept."""
+            temperature = textwrap.dedent(
+                """tempi=10.0,                     ! Initial Temperature. For the initial dynamics run, (NTX < 3) the velocities are assigned from a Maxwellian distribution at TEMPI K.tempi=10.0,                     ! Initial Temperature. For the initial dynamics run, (NTX < 3) the velocities are assigned from a Maxwellian distribution at TEMPI K.
+                   temp0=300.0,                    ! Reference temperature at which the system is to be kept."""  # noqa: E501
+            )
             annealing = """ /
 &wt TYPE='TEMP0', istep1=0, istep2=100000,
     value1=10.0, value2=300.0, /
 &wt TYPE='END'
 """
         else:
-            restart_input = """irest=1,                        ! Restart MD simulation from a previous run.
-    ntx=5,                          ! Coordinates and velocities will be read from a previous run."""
+            restart_input = textwrap.dedent(
+                """irest=1,          ! Restart MD simulation from a previous run.
+                   ntx=5,            ! Coordinates and velocities will be read from a previous run."""  # noqa: E501
+            )
             simtime = 50000
-            ntp = "ntp=1,                          ! MD simulations with isotropic position scaling"
-            ntb = "ntb=2,                          ! Constant Pressure. NPT simulation."
-            temperature = "temp0=300.0,                    ! Reference temperature at which the system is to be kept."
+            ntp = "ntp=1,            ! MD simulations with isotropic position scaling"
+            ntb = "ntb=2,            ! Constant Pressure. NPT simulation."
+            temperature = "temp0=300.0,            ! Reference temperature at which the system is to be kept."  # noqa: E501
             annealing = """ /
 &wt
     type='DUMPFREQ', istep1=5000,
@@ -106,22 +112,27 @@ def write_productioninput(
     mdfile = os.path.join(dir, productiondir, "md.in")
 
     # prディレクトリの中にboxで指定した数だけ001〜xxxというディレクトリを作成する
-    # 各ディレクトリではns_per_mddirで指定した時間(ns)だけMDシミュレーションを実行するための
-    # インプットファイルを作成する。
+    # 各ディレクトリではns_per_mddirで指定した時間(ns)だけMDシミュレーションを
+    # 実行するためのインプットファイルを作成する。
     for i in range(1, box + 1):
         # box_zeroはboxを桁数指定で0埋めしたもの
         box_zero = str(i).zfill(3)
         if not os.path.exists(os.path.join(dir, productiondir, box_zero)):
             os.makedirs(os.path.join(dir, productiondir, box_zero))
 
-        # i == 1 ならばrestartしない。それ以外はrestartをONにする（＝直前のMD runの速度情報を引き継ぐ）
+        # i == 1 ならばrestartしない。それ以外はrestartをONにする
+        # 直前のMD runの速度情報を引き継ぐ
         do_restart = False if i == 1 else True
         if do_restart:
-            restart_input = """irest=1,              ! Restart MD simulation from a previous run.
-    ntx=5,                ! Coordinates and velocities will be read from a previous run."""
+            restart_input = textwrap.dedent(
+                """irest=1,              ! Restart MD simulation from a previous run.
+                   ntx=5,                ! Coordinates and velocities will be read from a previous run."""  # noqa: E501
+            )
         else:
-            restart_input = """irest=0,              ! DO NOT restart MD simulation from a previous run.
-    ntx=1,                ! Coordinates and velocities will not be read."""
+            restart_input = textwrap.dedent(
+                """irest=0,              ! DO NOT restart MD simulation from a previous run.
+                   ntx=1,                ! Coordinates and velocities will not be read."""  # noqa: E501
+            )
         mdinput = production.productioninput(restart_input, ns_per_mddir)
         mdfile = os.path.join(dir, productiondir, box_zero, "md.in")
         with open(mdfile, mode="w") as f:
@@ -129,7 +140,7 @@ def write_productioninput(
 
         runfile = os.path.join(dir, productiondir, box_zero, "run.sh")
         if i == 1:
-            prevrstfile = "../../heat/md9.rst7"  # heat直後のrstファイル。
+            prevrstfile = "../../heat/md9.rst7"
         runinput = production.runinput(prevrstfile, machineenv=machineenv)
         with open(runfile, mode="w") as f:
             f.write(runinput)
