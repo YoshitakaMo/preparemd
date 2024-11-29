@@ -7,7 +7,8 @@ def min1input() -> str:
     """Template file for min1.in"""
 
     min1_template = textwrap.dedent(
-        """molecular dynamics minimization run 1
+        """\
+        molecular dynamics minimization run 1
         &cntrl
             imin=1,            ! Do Minimization
             nmropt=0,          ! No restraints
@@ -38,7 +39,8 @@ def min2input() -> str:
     """Template file for min2.in"""
 
     min2_template = textwrap.dedent(
-        """molecular dynamics minimization run 2
+        """\
+        molecular dynamics minimization run 2
         &cntrl
             imin=1,            ! Do Minimization
             nmropt=0,          ! No restraints
@@ -66,34 +68,35 @@ def min2input() -> str:
 def minimizercontent() -> str:
     """process of minimize/run.sh"""
     content = textwrap.dedent(
-        """DO_PARALLEL="mpirun -np ${PBS_NP} --mca orte_base_help_aggregate 0"
-topfile="../../top/leap.parm7"
-rstfile="../../top/leap.rst7"
+        """\
+        DO_PARALLEL="mpirun -np ${PBS_NP} --mca orte_base_help_aggregate 0"
+        topfile="../../top/leap.parm7"
+        rstfile="../../top/leap.rst7"
 
-if [ ! -f min2.rst7 ];then
-    ${DO_PARALLEL} pmemd.MPI -O \\
-        -i min1.in \\
-        -o min1.out \\
-        -p ${topfile} \\
-        -c ${rstfile} \\
-        -r min1.rst7 \\
-        -inf min1.info || exit $?
-    ${DO_PARALLEL} pmemd.MPI -O \\
-        -i min2.in \\
-        -o min2.out \\
-        -p ${topfile} \\
-        -c min1.rst7 \\
-        -r min2.rst7 \\
-        -inf min2.info || exit $?
-else
-    echo "min2.rst7 exists. Starts next cycle."
-fi
+        if [ ! -f min2.rst7 ];then
+            ${DO_PARALLEL} pmemd.MPI -O \\
+                -i min1.in \\
+                -o min1.out \\
+                -p ${topfile} \\
+                -c ${rstfile} \\
+                -r min1.rst7 \\
+                -inf min1.info || exit $?
+            ${DO_PARALLEL} pmemd.MPI -O \\
+                -i min2.in \\
+                -o min2.out \\
+                -p ${topfile} \\
+                -c min1.rst7 \\
+                -r min2.rst7 \\
+                -inf min2.info || exit $?
+        else
+            echo "min2.rst7 exists. Starts next cycle."
+        fi
 
-if [ ! -f min2.pdb ];then
-    # ambpdbコマンドでmin2操作後の座標ファイルをpdb形式のファイルに変換する
-    ambpdb -p ${topfile} -c min2.rst7 > min2.pdb
-fi
-"""
+        if [ ! -f min2.pdb ];then
+            # ambpdbコマンドでmin2操作後の座標ファイルをpdb形式のファイルに変換する
+            ambpdb -p ${topfile} -c min2.rst7 > min2.pdb
+        fi
+        """
     )  # noqa: E501
     return content
 

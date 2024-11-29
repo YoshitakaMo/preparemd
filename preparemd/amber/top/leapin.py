@@ -74,7 +74,8 @@ def additional_params(frcmod: list, prep: list, mol2: list) -> str:
     if mol2 is not None:
         for i in mol2:
             # iは'ACA = loadMol2 Acetyl_CoA.mol2', 'DON = loadMol2 DON.mol2'のような形式
-            # 'loadMol2'の後のファイルパスを修正し、distdirディレクトリ内のものを使用するようにする
+            # 'loadMol2'の後のファイルパスを修正し、distdirディレクトリ内のものを
+            # 使用するようにする
             # objnameに'ACA'が入るようにする
             objname = [a for a in re.split("=| |loadMol2", i) if a != ""][0]
             filepath = [a for a in re.split("=| |loadMol2", i) if a != ""][1]

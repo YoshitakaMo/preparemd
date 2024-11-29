@@ -15,37 +15,35 @@ def heatinput(
     temperature: str,
 ) -> str:
     """Write md[1-9].in file"""
-    heat_template = textwrap.dedent(
-        f"""Heat system (constant volume)
-            &cntrl
-                imin=0,                         ! Molecular Dynamics
-                {restart_input}
-                nstlim={simtime},                  ! Number of MD steps ( 200 ps )
-                dt=0.002,                       ! Timestep (ps)
-                igb=0,                          ! No generalized Born term is used (Default)
-                ntp=0,                          ! No pressure scaling (Default)
-                {ntp}
-                {ntb}
-                ntc=2,                          ! SHAKE on for bonds involving hydrogen atoms
-                ntf=2,                          ! No force evaluation for bonds with hydrogen
-                cut=8.0,                        ! Nonbonded cutoff (Angstroms)
-                iwrap=1,                        ! the coordinates written to the restart and trajectory files will be "wrapped" into a primary box.
-                ntpr=5000,                      ! Print to mdout every ntpr steps
-                ntwx=5000,                      ! Write to trajectory file every ntwc steps
-                ntwr=5000,                      ! Every ntwr steps during dynamics, the "restrt" file will be written
-                ntt=3,                          ! Langevin thermostat
-                gamma_ln=2.0,                   ! Collision frequency for thermostat
-                ig=-1,                          ! Random seed for Langevin thermostat
-                {temperature}
-                ntr=1,                          ! Harmonic position restraints ON. The restrained atoms are determined by the restraintmask string.
-                restraintmask=':1-{residuenum} & !@H=',  ! String that specifies the restrained atoms when ntr=1.
-                restraint_wt={weights[number - 1]},              ! The weight (in kcal mol-1 Å-2) for the positional restraints.
-                ioutfm=1,                       ! Binary NetCDF trajectory
-                nmropt=0,                       ! turn off (0) or on (1) NMR restraints
-            {annealing}/
+    heat_template = f"""Heat system (constant volume)
+&cntrl
+    imin=0,                         ! Molecular Dynamics
+    {restart_input}
+    nstlim={simtime},                  ! Number of MD steps ( 200 ps )
+    dt=0.002,                       ! Timestep (ps)
+    igb=0,                          ! No generalized Born term is used (Default)
+    ntp=0,                          ! No pressure scaling (Default)
+    {ntp}
+    {ntb}
+    ntc=2,                          ! SHAKE on for bonds involving hydrogen atoms
+    ntf=2,                          ! No force evaluation for bonds with hydrogen
+    cut=8.0,                        ! Nonbonded cutoff (Angstroms)
+    iwrap=1,                        ! the coordinates written to the restart and trajectory files will be "wrapped" into a primary box.
+    ntpr=5000,                      ! Print to mdout every ntpr steps
+    ntwx=5000,                      ! Write to trajectory file every ntwc steps
+    ntwr=5000,                      ! Every ntwr steps during dynamics, the "restrt" file will be written
+    ntt=3,                          ! Langevin thermostat
+    gamma_ln=2.0,                   ! Collision frequency for thermostat
+    ig=-1,                          ! Random seed for Langevin thermostat
+    {temperature}
+    ntr=1,                          ! Harmonic position restraints ON. The restrained atoms are determined by the restraintmask string.
+    restraintmask=':1-{residuenum} & !@H=',  ! String that specifies the restrained atoms when ntr=1.
+    restraint_wt={weights[number - 1]},              ! The weight (in kcal mol-1 Å-2) for the positional restraints.
+    ioutfm=1,                       ! Binary NetCDF trajectory
+    nmropt=0,                       ! turn off (0) or on (1) NMR restraints
+    {annealing}/
 
-            """  # noqa: E501
-    )
+"""  # noqa: E501
     return heat_template
 
 

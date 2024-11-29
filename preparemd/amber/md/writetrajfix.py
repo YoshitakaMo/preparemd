@@ -7,8 +7,10 @@ def writetrajfix(
     """Write trajfix.in file in amber/pr directory.
 
     Args:
-        distdir: 出力先のディレクトリ名。この中にamber, topディレクトリが作られることを想定する。
-        resnumber: 系に存在する残基数。position restraintsをかける対象の原子の残基範囲と一致する。
+        distdir: 出力先のディレクトリ名。この中にamber, topディレクトリが作られる
+                 ことを想定する。
+        resnumber: 系に存在する残基数。position restraintsをかける対象の原子の
+                   残基範囲と一致する。
         num_mddir: 上記のサブディレクトリにつき、何nsのシミュレーションを行うか。
         suffix: 出力トラジェクトリにつけるサフィックス。デフォルトは""。
     """

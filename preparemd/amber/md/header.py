@@ -5,7 +5,8 @@ def pbsheader(machineenv: str = "yayoi") -> str:
     """Switch PBS header properly"""
     if machineenv == "flow":
         pbsheader = textwrap.dedent(
-            """#!/bin/bash
+            """\
+            #!/bin/bash
             #PJM -L rscunit=cx
             #PJM -L rscgrp=cx-share
             #PJM -L gpu=1
@@ -18,10 +19,11 @@ def pbsheader(machineenv: str = "yayoi") -> str:
             module use -a /data/group1/z44243z/modulefiles
             module load amber24
             """
-        )
+        ).strip()
     elif machineenv == "yayoi":
         pbsheader = textwrap.dedent(
-            """#!/bin/bash
+            """\
+            #!/bin/bash
             #PBS -q default
             #PBS -l nodes=1:ppn=16:gpus=1
             #PBS -l walltime=72:00:00
@@ -39,10 +41,11 @@ def pbsheader(machineenv: str = "yayoi") -> str:
                 module load amber24
             fi
             """
-        )
+        ).strip()
     elif machineenv == "foodin":
         pbsheader = textwrap.dedent(
-            """#!/bin/bash
+            """\
+            #!/bin/bash
             #SBATCH -p all_q
             #SBATCH -n 32
             #SBATCH --gpus 1
@@ -53,7 +56,7 @@ def pbsheader(machineenv: str = "yayoi") -> str:
             . /home/apps/Modules/init/profile.sh
             module load amber24
             """
-        )
+        ).strip()
 
     return pbsheader
 

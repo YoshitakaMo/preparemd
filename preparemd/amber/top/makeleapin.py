@@ -1,7 +1,9 @@
 import os
 import re
 import shutil
+
 from absl import logging
+
 from preparemd.amber.top import leapin
 
 
@@ -18,11 +20,8 @@ def filecopy(val: list, distdir: str) -> None:
 
 
 def filecopy_mol2(mol2: list, distdir: str) -> None:
-    # valがmol2の場合
     if mol2 is not None:
         for i in mol2:
-            # iは'ACA = loadMol2 Acetyl_CoA.mol2', 'DON = loadMol2 DON.mol2'のような形式
-            # 'loadMol2'の後のファイルパスを修正し、distdirディレクトリ内のものを使用するようにする
             if "loadMol2" not in i:
                 logging.error(f"'loadMol2' was not detected in str, {i}.")
                 raise ValueError(f"'loadMol2' was not detected in str, {i}.")

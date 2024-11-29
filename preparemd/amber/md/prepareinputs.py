@@ -58,11 +58,14 @@ def write_heatinput(
                 """tempi=10.0,                     ! Initial Temperature. For the initial dynamics run, (NTX < 3) the velocities are assigned from a Maxwellian distribution at TEMPI K.tempi=10.0,                     ! Initial Temperature. For the initial dynamics run, (NTX < 3) the velocities are assigned from a Maxwellian distribution at TEMPI K.
                    temp0=300.0,                    ! Reference temperature at which the system is to be kept."""  # noqa: E501
             )
-            annealing = """ /
-&wt TYPE='TEMP0', istep1=0, istep2=100000,
-    value1=10.0, value2=300.0, /
-&wt TYPE='END'
-"""
+            annealing = textwrap.dedent(
+                """\
+                /
+                &wt TYPE='TEMP0', istep1=0, istep2=100000,
+                    value1=10.0, value2=300.0, /
+                &wt TYPE='END'
+                """
+            )
         else:
             restart_input = textwrap.dedent(
                 """irest=1,          ! Restart MD simulation from a previous run.
@@ -72,14 +75,17 @@ def write_heatinput(
             ntp = "ntp=1,            ! MD simulations with isotropic position scaling"
             ntb = "ntb=2,            ! Constant Pressure. NPT simulation."
             temperature = "temp0=300.0,            ! Reference temperature at which the system is to be kept."  # noqa: E501
-            annealing = """ /
-&wt
-    type='DUMPFREQ', istep1=5000,
-/
-&wt type='END' /
-DISANG=dist1.rst
-DUMPAVE=dist1.dat
-"""
+            annealing = textwrap.dedent(
+                """\
+                /
+                &wt
+                    type='DUMPFREQ', istep1=5000,
+                /
+                &wt type='END' /
+                DISANG=dist1.rst
+                DUMPAVE=dist1.dat
+                """
+            )
 
         md_i = heat.heatinput(
             restart_input,
