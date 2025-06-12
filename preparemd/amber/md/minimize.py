@@ -1,6 +1,6 @@
 import textwrap
 
-from preparemd.amber.md import header
+from preparemd.utils import header
 
 
 def min1input() -> str:
@@ -69,6 +69,7 @@ def minimizercontent() -> str:
     """process of minimize/run.sh"""
     content = textwrap.dedent(
         """\
+        test ${PBS_NP} || PBS_NP=8
         DO_PARALLEL="mpirun -np ${PBS_NP} --mca orte_base_help_aggregate 0"
         topfile="../../top/leap.parm7"
         rstfile="../../top/leap.rst7"
@@ -104,8 +105,7 @@ def minimizercontent() -> str:
 def runinput(machineenv: str) -> str:
     """content of minimize/run.sh"""
 
-    runinput = header.qsubheader(machineenv=machineenv)
-    runinput += "test ${PBS_NP} || PBS_NP=8\n"
+    runinput = header.queue_header(machineenv=machineenv)
     runinput += minimizercontent()
 
     return runinput

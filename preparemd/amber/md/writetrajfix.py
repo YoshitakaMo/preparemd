@@ -1,4 +1,5 @@
 import os
+import textwrap
 
 
 def writetrajfix(
@@ -23,27 +24,30 @@ def writetrajfix(
         box_zero = str(i).zfill(3)
         trajinpart += f"trajin {box_zero}/mdcrd 1 last {STEP}\n"
 
-    trajfix_content = f"""## 1段階目のtrajin処理。
-trajin 001/mdcrd 1 1 1
-reference ../../top/leap.rst7
-unwrap :1-{resnumber}
-center :1-{resnumber}@CA mass origin
-rms first out rmsd.dat @CA
-strip :SOD,WAT,TIP3,Cl-,Na+
-trajout {suffix}init.pdb pdb nobox
-go
+    trajfix_content = textwrap.dedent(
+        f"""\
+        ## 1段階目のtrajin処理。
+        trajin 001/mdcrd 1 1 1
+        reference ../../top/leap.rst7
+        unwrap :1-{resnumber}
+        center :1-{resnumber}@CA mass origin
+        rms first out rmsd.dat @CA
+        strip :SOD,WAT,TIP3,Cl-,Na+
+        trajout {suffix}init.pdb pdb nobox
+        go
 
-clear trajin
+        clear trajin
 
-## 2段階目のtrajin処理。
-{trajinpart}
-unwrap :1-{resnumber}
-center :1-{resnumber}@CA mass origin
-rms first out rmsd.dat @CA
-strip :SOD,WAT,TIP3,Cl-,Na+
+        ## 2段階目のtrajin処理。
+        {trajinpart}
+        unwrap :1-{resnumber}
+        center :1-{resnumber}@CA mass origin
+        rms first out rmsd.dat @CA
+        strip :SOD,WAT,TIP3,Cl-,Na+
 
-trajout {suffix}traj.trr
-go
-"""
+        trajout {suffix}traj.trr
+        go
+        """
+    )
     with open(trajfixfile, mode="w") as f:
         f.write(trajfix_content)
