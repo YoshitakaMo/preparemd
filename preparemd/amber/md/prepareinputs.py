@@ -14,16 +14,12 @@ def write_minimizeinput(
     min2file = os.path.join(dir, minimizedir, "min2.in")
     runfile = os.path.join(dir, minimizedir, "run.sh")
 
-    min1input = minimize.min1input()
-    min2input = minimize.min2input()
-    runinput = minimize.runinput(machineenv=machineenv)
-
     with open(min1file, mode="w") as f:
-        f.write(min1input)
+        f.write(minimize.min1input())
     with open(min2file, mode="w") as f:
-        f.write(min2input)
+        f.write(minimize.min2input())
     with open(runfile, mode="w") as f:
-        f.write(runinput)
+        f.write(minimize.runinput(machineenv=machineenv))
 
     os.chmod(runfile, 0o755)
 

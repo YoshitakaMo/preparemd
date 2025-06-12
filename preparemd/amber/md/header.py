@@ -1,10 +1,10 @@
 import textwrap
 
 
-def pbsheader(machineenv: str = "yayoi") -> str:
-    """Switch PBS header properly"""
+def queue_header(machineenv: str) -> str:
+    """Switch queue_ header properly"""
     if machineenv == "flow":
-        pbsheader = textwrap.dedent(
+        queue_header = textwrap.dedent(
             """\
             #!/bin/bash
             #PJM -L rscunit=cx
@@ -21,14 +21,14 @@ def pbsheader(machineenv: str = "yayoi") -> str:
             """
         ).strip()
     elif machineenv == "yayoi":
-        pbsheader = textwrap.dedent(
+        queue_header = textwrap.dedent(
             """\
             #!/bin/bash
-            #PBS -q default
-            #PBS -l nodes=1:ppn=16:gpus=1
-            #PBS -l walltime=72:00:00
+            #queue_ -q default
+            #queue_ -l nodes=1:ppn=16:gpus=1
+            #queue_ -l walltime=72:00:00
 
-            test $PBS_O_WORKDIR && cd $PBS_O_WORKDIR
+            test $queue__O_WORKDIR && cd $queue__O_WORKDIR
             # run the environment module
             if test -f /home/apps/Modules/init/profile.sh; then
                 . /home/apps/Modules/init/profile.sh
@@ -43,11 +43,11 @@ def pbsheader(machineenv: str = "yayoi") -> str:
             """
         ).strip()
     elif machineenv == "foodin":
-        pbsheader = textwrap.dedent(
+        queue_header = textwrap.dedent(
             """\
             #!/bin/bash
-            #SBATCH -p all_q
-            #SBATCH -n 32
+            #SBATCH -p q1
+            #SBATCH -n 16
             #SBATCH --gpus 1
             #SBATCH -o %x.%j.out
             #SBATCH -e %x.%j.err
@@ -58,7 +58,7 @@ def pbsheader(machineenv: str = "yayoi") -> str:
             """
         ).strip()
 
-    return pbsheader
+    return queue_header
 
 
 def qsubheader(machineenv: str) -> str:
@@ -66,7 +66,7 @@ def qsubheader(machineenv: str) -> str:
     Please modify this file for your calculation environments."""
 
     qsub_template = textwrap.dedent(
-        f"""{pbsheader(machineenv)}
+        f"""{queue_header(machineenv)}
         ### Write your qsub script from here.
         echo `hostname`
         """
