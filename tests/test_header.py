@@ -1,4 +1,4 @@
-from preparemd.amber.md.header import qsubheader, queue_header
+from preparemd.utils.header import queue_header
 
 
 def test_queue_header():
@@ -52,7 +52,3 @@ def test_queue_header():
         "module load amber24"
     )
     assert queue_header("foodin") == expected_output
-
-
-def test_qsubheader():
-    assert qsubheader() == expected_output

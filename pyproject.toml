@@ -14,7 +14,7 @@ classifiers = [
     'Operating System :: MacOS',
 ]
 requires-python = ">=3.12"
-dependencies = ["pip", "loguru"]
+dependencies = ["absl-py", "biopython", "pip", "loguru"]
 
 [tool.uv]
 dev-dependencies = ["mypy", "notebook", "pytest", "ruff"]
@@ -58,3 +58,6 @@ dynamic = ["name", "version"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["preparemd"]
+
+[project.scripts]
+preparemd = 'preparemd.preparemd:main'

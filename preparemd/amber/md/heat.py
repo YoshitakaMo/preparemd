@@ -1,6 +1,6 @@
 import textwrap
 
-from preparemd.amber.md import header
+from preparemd.utils import header
 
 
 def heatinput(
