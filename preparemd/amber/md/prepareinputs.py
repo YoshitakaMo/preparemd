@@ -266,7 +266,7 @@ def preparepre2file(distdir: str, rotate: str = "", sslink_file: str = ""):
     fp.seek(0)
     cmd = [cpptraj_path, "-i", fp.name, "-o", "/dev/null"]
 
-    logger.info('Launching subprocess "%s"', " ".join(cmd))
+    logger.info(f"Launching subprocess {' '.join(cmd)}")
     process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     _, stderr = process.communicate()
     retcode = process.wait()
@@ -334,7 +334,7 @@ def run_leap(distdir: str, boxsize: str, pre2boxsize: str) -> None:
         os.remove(outlogfile)
     cmd = [tleap_path, "-f", leapinfile]
 
-    logger.info('Launching subprocess "%s"', " ".join(cmd))
+    logger.info(f"Launching subprocess {' '.join(cmd)}")
     process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = process.communicate()
     retcode = process.wait()
@@ -434,7 +434,7 @@ def run_pdb4amber(
         strip = "@H, H2, H3, HG"
     cmd = [pdb4amber_path, "-i", pdbfile_path, "-o", outputfile, "-s", strip]
 
-    logger.info('Launching subprocess "%s"', " ".join(cmd))
+    logger.info(f"Launching subprocess {' '.join(cmd)}")
     process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     _, stderr = process.communicate()
     retcode = process.wait()
