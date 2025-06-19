@@ -154,11 +154,11 @@ def main():
         prep=args.prep,
         mol2=args.mol2,
     )
-    if args.run_leap:
-        prepareinputs.run_leap(args.distdir, args.boxsize, pre2boxsize)
     prepareinputs.prepareamberfiles(
         args.distdir, resnumber, args.num_mddir, args.ns_per_mddir, args.machineenv
     )
+    if args.run_leap:
+        prepareinputs.run_leap(args.distdir, args.boxsize, pre2boxsize)
     writetrajfix.writetrajfix(args.distdir, resnumber, args.num_mddir, args.trajprefix)
 
 
