@@ -54,15 +54,19 @@ def write_heatinput(
         is_md1 = True if i == 1 else False
         if is_md1:
             restart_input = textwrap.dedent(
-                """irest=0,                        ! DO NOT restart MD simulation from a previous run.
-                   ntx=1,                          ! Coordinates and velocities will not be read"""  # noqa: E501
+                """\
+                irest=0,                        ! DO NOT restart MD simulation from a previous run.
+                    ntx=1,                          ! Coordinates and velocities will not be read.\
+                """  # noqa: E501
             )
             simtime = 100000
             ntp = "ntp=0,                          ! No pressure scaling (Default)"
             ntb = "ntb=1,                          ! Constant Volume. NVT simulation."
             temperature = textwrap.dedent(
-                """tempi=10.0,                     ! Initial Temperature. For the initial dynamics run, (NTX < 3) the velocities are assigned from a Maxwellian distribution at TEMPI K.tempi=10.0,                     ! Initial Temperature. For the initial dynamics run, (NTX < 3) the velocities are assigned from a Maxwellian distribution at TEMPI K.
-                   temp0=300.0,                    ! Reference temperature at which the system is to be kept."""  # noqa: E501
+                """\
+                tempi=10.0,                     ! Initial Temperature. For the initial dynamics run, (NTX < 3) the velocities are assigned from a Maxwellian distribution at TEMPI K.
+                    temp0=300.0,                    ! Reference temperature at which the system is to be kept.\
+                """  # noqa: E501
             )
             annealing = textwrap.dedent(
                 """\
@@ -74,8 +78,10 @@ def write_heatinput(
             )
         else:
             restart_input = textwrap.dedent(
-                """irest=1,                        ! Restart MD simulation from a previous run.
-                   ntx=5,                          ! Coordinates and velocities will be read from a previous run."""  # noqa: E501
+                """\
+                irest=1,                        ! Restart MD simulation from a previous run.
+                    ntx=5,                          ! Coordinates and velocities will be read from a previous run.\
+                """  # noqa: E501
             )
             simtime = 50000
             ntp = "ntp=1,                          ! MD simulations with isotropic position scaling"
@@ -139,13 +145,13 @@ def write_productioninput(
             restart_input = textwrap.dedent(
                 """\
                 irest=1,              ! Restart MD simulation from a previous run.
-                ntx=5,                ! Coordinates and velocities will be read from a previous run."""  # noqa: E501
+                    ntx=5,                ! Coordinates and velocities will be read from a previous run."""  # noqa: E501
             )
         else:
             restart_input = textwrap.dedent(
                 """\
                 irest=0,              ! DO NOT restart MD simulation from a previous run.
-                ntx=1,                ! Coordinates and velocities will not be read."""  # noqa: E501
+                    ntx=1,                ! Coordinates and velocities will not be read."""  # noqa: E501
             )
         mdinput = production.productioninput(restart_input, ns_per_mddir)
         mdfile = os.path.join(dir, productiondir, box_zero, "md.in")
@@ -253,14 +259,15 @@ def preparepre2file(distdir: str, rotate: str = "", sslink_file: str = ""):
     fp = tempfile.NamedTemporaryFile(suffix=".in", mode="w+t", encoding="utf-8")
     fp.write(
         textwrap.dedent(
-            f"""parm {pdbfile_path}
-        trajin {pdbfile_path}
-        box auto
-        autoimage @CA origin
-        {rotate}
-        trajout {outfile_path}
-        go
-        """
+            f"""\
+            parm {pdbfile_path}
+            trajin {pdbfile_path}
+            box auto
+            autoimage @CA origin
+            {rotate}
+            trajout {outfile_path}
+            go
+            """
         )
     )
     fp.seek(0)

@@ -1,5 +1,6 @@
 import os
 import re
+import textwrap
 
 
 def boxsize_checker(boxsize: str) -> str:
@@ -131,51 +132,70 @@ def leapininput(
     ssbondinfo = get_sspair_from_sslink_file(sslink_file)
 
     if fftype == "ff14SB":
-        prot_wat_forcefield = """#AMBER の力場パラメータff14SBを読み込む
-source leaprc.protein.ff14SB
-source leaprc.water.tip3p
-source leaprc.gaff2
+        prot_wat_forcefield = textwrap.dedent(
+            """\
+            #AMBER の力場パラメータff14SBを読み込む
+            source leaprc.protein.ff14SB
+            source leaprc.water.tip3p
+            source leaprc.gaff2
 
-#追加のイオンの力場の導入
-loadAmberParams frcmod.ionsjc_tip3p"""
+            #追加のイオンの力場の導入
+            loadAmberParams frcmod.ionsjc_tip3p
+            """
+        )
         solvateboxtype = "TIP3PBOX"
     elif fftype == "ff19SB":
-        prot_wat_forcefield = """#AMBER の力場パラメータff19SBとOPC力場を読み込む
-source leaprc.protein.ff19SB
-source leaprc.water.opc
-source leaprc.gaff2
+        prot_wat_forcefield = textwrap.dedent(
+            """\
+            #AMBER の力場パラメータff19SBとOPC力場を読み込む
+            source leaprc.protein.ff19SB
+            source leaprc.water.opc
+            source leaprc.gaff2
 
-#ff19SBはOPC水モデルと組み合わせる。TIP3P水モデルとは組み合わせてはならない
-loadAmberParams frcmod.opc"""
+            #ff19SBはOPC水モデルと組み合わせる。TIP3P水モデルとは組み合わせてはならない
+            loadAmberParams frcmod.opc
+            """
+        )
         solvateboxtype = "OPCBOX"
 
     additionalparams = additional_params(frcmod, prep, mol2)
 
-    leapin_template = f"""{prot_wat_forcefield}
-{additionalparams}
+    leapin_template = textwrap.dedent(
+        """\
+        {prot_wat_forcefield}
+        {additionalparams}
 
-#pdbを"mol"として読み込む
-mol = loadPDB pre2.pdb
-{ssbondinfo}
-center mol
+        #pdbを"mol"として読み込む
+        mol = loadPDB pre2.pdb
+        {ssbondinfo}
+        center mol
 
-#boxsize引数で指定された周期境界のボックスを形成する。
-set mol box {{ {boxsize} }}
+        #boxsize引数で指定された周期境界のボックスを形成する。
+        set mol box {{ {boxsize} }}
 
-#イオンの追加・末尾の0は中和する数だけイオンを入れるという設定。
-addIons2 mol Na+ {ionnum}
-addIons2 mol Cl- 0
+        #イオンの追加・末尾の0は中和する数だけイオンを入れるという設定。
+        addIons2 mol Na+ {ionnum}
+        addIons2 mol Cl- 0
 
-#ボックスの周りに更に{boxmargin}Aのボックスを設置し、溶媒和させる。
-solvateBox mol {solvateboxtype} {boxmargin}
-#最後に、"mol"という溶媒和ボックスの系の電荷情報を表示する。0.00000になっていることが理想。
-charge mol
+        #ボックスの周りに更に{boxmargin}Aのボックスを設置し、溶媒和させる。
+        solvateBox mol {solvateboxtype} {boxmargin}
+        #最後に、"mol"という溶媒和ボックスの系の電荷情報を表示する。0.00000になっていることが理想。
+        charge mol
 
-#溶媒和された系のトポロジー・初期座標をleap.parm7, leap.rst7としてそれぞれ保存
-saveAmberParm mol leap.parm7 leap.rst7
+        #溶媒和された系のトポロジー・初期座標をleap.parm7, leap.rst7としてそれぞれ保存
+        saveAmberParm mol leap.parm7 leap.rst7
 
-#溶媒和された系のPDBファイルをleap.pdbとして保存
-savePDB mol leap.pdb
-quit
-"""
+        #溶媒和された系のPDBファイルをleap.pdbとして保存
+        savePDB mol leap.pdb
+        quit
+        """
+    ).format(
+        prot_wat_forcefield=prot_wat_forcefield,
+        additionalparams=additionalparams,
+        ssbondinfo=ssbondinfo,
+        boxsize=boxsize,
+        ionnum=ionnum,
+        boxmargin=boxmargin,
+        solvateboxtype=solvateboxtype,
+    )
     return leapin_template
