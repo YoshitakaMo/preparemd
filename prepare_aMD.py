@@ -1,14 +1,11 @@
-#!/usr/bin/env pytyon3
+#!/usr/bin/env python3
 # %%
-import Bio.PDB
 import os
 import re
 import subprocess
-from absl import logging
-from absl import app
-from absl import flags
 
-# %%
+from absl import app, flags, logging
+from gemmi import read_structure
 
 
 def getvalue(mdout, energyterm):
@@ -36,23 +33,23 @@ def getvalue(mdout, energyterm):
     return value
 
 
-def get_res_atom_number(pdbfile) -> tuple:
+def _get_res_atom_number(pdbfile) -> tuple[int, int]:
     """
-    Biopythonを用いてイオンと水以外の残基数(residuenum)と全原子数(atomnum)を返す
+    compute the number of residues and atoms in a PDB file.
+    Args:
+        pdbfile (str): Path to the PDB file.
+    Returns:
+        tuple: A tuple containing the number of residues and atoms.
     """
+    structure = read_structure(pdbfile)
     residuenum = 0
     atomnum = 0
-    pdb_parser = Bio.PDB.PDBParser(PERMISSIVE=True, QUIET=True)
-    with open(pdbfile) as f:
-        struc = pdb_parser.get_structure(" ", f)
-    for model in struc:
+    for model in structure:
         for chain in model:
-            for res in chain:
-                if res.get_resname() not in ["Na+", "Cl-", "WAT"]:
+            for residue in chain:
+                if residue.name not in ["Na+", "Cl-", "WAT"]:
                     residuenum += 1
-                for atom in res:
-                    atomnum += 1
-
+                atomnum += len(residue)
     return residuenum, atomnum
 
 
@@ -171,7 +168,7 @@ def write_amdinputfile(
     if not os.path.exists(pdbfile_path):
         logging.error(f"Could not find {pdbfile_path} file")
         raise ValueError(f"Could not find {pdbfile_path} file")
-    residuenum, atomnum = get_res_atom_number(pdbfile_path)
+    residuenum, atomnum = _get_res_atom_number(pdbfile_path)
 
     ethreshp = float(0.2 * atomnum + eptot)
     alphap = float(0.2 * atomnum)

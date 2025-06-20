@@ -14,7 +14,7 @@ classifiers = [
     'Operating System :: MacOS',
 ]
 requires-python = ">=3.12"
-dependencies = ["absl-py", "biopython", "pip", "loguru"]
+dependencies = ["absl-py", "gemmi", "pip", "loguru"]
 
 [tool.uv]
 dev-dependencies = ["mypy", "notebook", "pytest", "ruff"]

@@ -4,7 +4,7 @@ import subprocess
 import tempfile
 import textwrap
 
-from Bio.PDB.PDBParser import PDBParser
+from gemmi import read_structure
 from loguru import logger
 
 from preparemd.amber.md import heat, minimize, production
@@ -400,6 +400,25 @@ def cys_to_cyx_in_pre2file(distdir: str, sslink_file: str) -> None:
         f.writelines(outcontent)
 
 
+def _get_residues_from_pdb(pdbfile: str) -> int:
+    """Get the number of residues without water from a PDB file.
+    Args:
+        pdbfile (str): Path to the PDB file.
+    Returns:
+        int: Number of residues in the PDB file, excluding water (HOH).
+    """
+    if not os.path.isfile(pdbfile):
+        raise FileNotFoundError(f"{pdbfile} was not found.")
+    struc = read_structure(pdbfile)
+    resnum = 0
+    for model in struc:
+        for chain in model:
+            for res in chain:
+                if res.name != "HOH":
+                    resnum += 1
+    return resnum
+
+
 def run_pdb4amber(
     pdbfile_path: str, distdir: str, strip: str = "", sslink_file: str = ""
 ):
@@ -456,14 +475,6 @@ def run_pdb4amber(
     if not os.path.isfile(sslink_file):
         raise FileNotFoundError(f"{sslink_file} file is not found.")
 
-    # outputfile内に存在する残基数の情報がposition restraintsの生成に必要。
-    pdb_parser = PDBParser(QUIET=True)
-    struc = pdb_parser.get_structure("pre", outputfile)
-    resnum = 0
-    for model in struc:
-        for chain in model:
-            for r in chain.get_residues():
-                if r.get_resname() != "WAT":
-                    resnum += 1
+    resnum = _get_residues_from_pdb(outputfile)
 
     return resnum, sslink_file
